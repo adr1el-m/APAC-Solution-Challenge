@@ -1,0 +1,167 @@
+{
+  "crops": [
+    {
+      "id": "rice",
+      "name": "Rice",
+      "varieties": [
+        {
+          "name": "IR64",
+          "yieldPotential": "High",
+          "maturityDays": 115,
+          "diseaseResistance": "Medium",
+          "droughtTolerance": "Low",
+          "optimalConditions": {
+            "soilType": "Clay loam",
+            "temperature": "25-30°C",
+            "rainfall": "1500-2000mm"
+          },
+          "marketDemand": "High"
+        },
+        {
+          "name": "NERICA",
+          "yieldPotential": "Medium-High",
+          "maturityDays": 95,
+          "diseaseResistance": "High",
+          "droughtTolerance": "Medium",
+          "optimalConditions": {
+            "soilType": "Various",
+            "temperature": "24-30°C",
+            "rainfall": "1000-1500mm"
+          },
+          "marketDemand": "Medium-High"
+        }
+      ],
+      "fertilizationSchedule": [
+        {
+          "stage": "Basal",
+          "timing": "Before planting",
+          "npkRatio": "18-46-0",
+          "amountKgPerHa": 100
+        },
+        {
+          "stage": "Tillering",
+          "timing": "15-20 days after transplanting",
+          "npkRatio": "46-0-0",
+          "amountKgPerHa": 150
+        },
+        {
+          "stage": "Panicle initiation",
+          "timing": "40-45 days after transplanting",
+          "npkRatio": "46-0-0",
+          "amountKgPerHa": 100
+        }
+      ],
+      "rotationRecommendations": ["Legumes", "Vegetables", "Maize"],
+      "aiYieldPrediction": {
+        "basedOn": "5-year historical data",
+        "predictedIncrease": "25-30%"
+      }
+    },
+    {
+      "id": "maize",
+      "name": "Maize/Corn",
+      "varieties": [
+        {
+          "name": "Hybrid P3258",
+          "yieldPotential": "Very High",
+          "maturityDays": 130,
+          "diseaseResistance": "High",
+          "droughtTolerance": "Medium",
+          "optimalConditions": {
+            "soilType": "Well-drained loamy",
+            "temperature": "18-25°C",
+            "rainfall": "500-800mm"
+          },
+          "marketDemand": "High"
+        },
+        {
+          "name": "Open Pollinated ZM521",
+          "yieldPotential": "Medium",
+          "maturityDays": 110,
+          "diseaseResistance": "Medium",
+          "droughtTolerance": "High",
+          "optimalConditions": {
+            "soilType": "Sandy loam to clay loam",
+            "temperature": "18-30°C",
+            "rainfall": "400-600mm"
+          },
+          "marketDemand": "Medium"
+        }
+      ],
+      "fertilizationSchedule": [
+        {
+          "stage": "Basal",
+          "timing": "At planting",
+          "npkRatio": "15-15-15",
+          "amountKgPerHa": 200
+        },
+        {
+          "stage": "V6 (6 leaves)",
+          "timing": "25-30 days after emergence",
+          "npkRatio": "46-0-0",
+          "amountKgPerHa": 150
+        },
+        {
+          "stage": "V12 (12 leaves)",
+          "timing": "45-50 days after emergence",
+          "npkRatio": "46-0-0",
+          "amountKgPerHa": 100
+        }
+      ],
+      "rotationRecommendations": ["Legumes", "Sunflower", "Sweet Potato"],
+      "aiYieldPrediction": {
+        "basedOn": "3-year historical data + climate models",
+        "predictedIncrease": "30-35%"
+      }
+    }
+  ],
+  "soilRecommendations": [
+    {
+      "soilType": "Sandy",
+      "recommendedCrops": ["Cassava", "Sweet Potato", "Groundnut"],
+      "liming": "Medium requirement",
+      "organicMatter": "High requirement",
+      "irrigationNotes": "Frequent irrigation needed"
+    },
+    {
+      "soilType": "Loamy",
+      "recommendedCrops": ["Maize", "Vegetables", "Wheat", "Soybean"],
+      "liming": "Low to medium requirement",
+      "organicMatter": "Medium requirement",
+      "irrigationNotes": "Moderate irrigation schedule"
+    },
+    {
+      "soilType": "Clay",
+      "recommendedCrops": ["Rice", "Sugarcane", "Cotton"],
+      "liming": "Variable - soil test recommended",
+      "organicMatter": "Medium requirement",
+      "irrigationNotes": "Less frequent, deeper irrigation"
+    }
+  ],
+  "profitabilityIndex": [
+    {
+      "crop": "Rice",
+      "inputCosts": "High",
+      "marketPrice": "Medium-High",
+      "laborRequirement": "High",
+      "returnOnInvestment": "35-45%",
+      "marketTrend": "Stable-Increasing"
+    },
+    {
+      "crop": "Maize",
+      "inputCosts": "Medium",
+      "marketPrice": "Medium",
+      "laborRequirement": "Medium",
+      "returnOnInvestment": "40-50%",
+      "marketTrend": "Increasing"
+    },
+    {
+      "crop": "Vegetables",
+      "inputCosts": "High",
+      "marketPrice": "High",
+      "laborRequirement": "Very High",
+      "returnOnInvestment": "60-100%",
+      "marketTrend": "Volatile-High"
+    }
+  ]
+} 

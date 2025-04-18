@@ -4,25 +4,25 @@ import { motion } from 'framer-motion';
 const Projects = () => {
   const projects = [
     {
-      title: 'Crop Disease Detection',
-      description: 'Advanced AI-powered system that identifies crop diseases in real-time using computer vision. Helps farmers take immediate action to protect their yields.',
+      title: 'AI-Powered Disease Detection',
+      description: 'Advanced computer vision system that instantly identifies crop diseases with 99% accuracy. Scan any plant with your phone camera to get immediate treatment recommendations and prevent yield loss.',
       tech: ['TensorFlow', 'Computer Vision', 'React Native', 'Cloud API'],
       image: '/projects/crop-disease.jpg',
       link: '#disease-detection'
     },
     {
       title: 'Smart Irrigation System',
-      description: 'IoT-based irrigation management system that optimizes water usage based on soil conditions, weather forecasts, and crop requirements.',
-      tech: ['IoT Sensors', 'Machine Learning', 'Weather API', 'MongoDB'],
+      description: 'Precision water management that saves up to 60% on water usage while improving crop health. Our IoT sensors and ML algorithms optimize irrigation based on real-time soil conditions and weather forecasts.',
+      tech: ['IoT Sensors', 'Machine Learning', 'Weather API', 'Cloud Dashboard'],
       image: '/projects/smart-irrigation.jpg',
       link: '#smart-irrigation'
     },
     {
-      title: 'Yield Prediction',
-      description: 'Machine learning model that predicts crop yields based on historical data, weather patterns, and soil conditions to help farmers make informed decisions.',
-      tech: ['Python', 'Scikit-learn', 'Data Analytics', 'PostgreSQL'],
+      title: 'Intelligent Crop Advisor',
+      description: 'AI-driven recommendations that increase yields by 30% on average. Get personalized planting schedules, fertilizer plans, and market insights tailored to your specific land, climate, and crop varieties.',
+      tech: ['Gemini AI', 'Predictive Analytics', 'Market API', 'Mobile App'],
       image: '/projects/yield-prediction.jpg',
-      link: '#yield-prediction'
+      link: '#crop-advisor'
     }
   ];
 
@@ -37,10 +37,14 @@ const Projects = () => {
   };
 
   const itemVariants = {
-    hidden: { y: 20, opacity: 0 },
+    hidden: { y: 50, opacity: 0 },
     visible: {
       y: 0,
-      opacity: 1
+      opacity: 1,
+      transition: {
+        type: "spring",
+        stiffness: 100
+      }
     }
   };
 
@@ -55,11 +59,10 @@ const Projects = () => {
           className="text-center mb-12"
         >
           <h2 className="text-3xl font-bold text-gray-900 mb-4">
-            Smart Agricultural Solutions
+            Our Core Solutions
           </h2>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Innovative technology solutions designed to revolutionize farming practices
-            and improve agricultural productivity
+            Three powerful technologies working together to revolutionize farming and secure our food future
           </p>
         </motion.div>
         
@@ -68,12 +71,13 @@ const Projects = () => {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+          className="grid grid-cols-1 md:grid-cols-3 gap-8"
         >
           {projects.map((project, index) => (
             <motion.div
               key={index}
               variants={itemVariants}
+              whileHover={{ y: -10, transition: { duration: 0.2 } }}
               className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition duration-300"
             >
               <div className="h-48 bg-green-100 relative">

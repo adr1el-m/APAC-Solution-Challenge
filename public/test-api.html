@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gemini API Test</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    button {
+      padding: 10px 15px;
+      background: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      margin: 10px 0;
+    }
+    #result {
+      white-space: pre-wrap;
+      background: #f5f5f5;
+      padding: 15px;
+      border-radius: 4px;
+      margin-top: 20px;
+    }
+    .error {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <h1>Gemini API Test</h1>
+  <p>This page tests the Gemini API with different configurations</p>
+  
+  <button id="test1">Test v1beta endpoint + gemini-pro</button>
+  <button id="test2">Test v1 endpoint + gemini-pro</button>
+  <button id="test3">Test with simple payload</button>
+  
+  <div id="result">Results will appear here...</div>
+  
+  <script type="module">
+    import { GEMINI_API_KEY, GEMINI_MODEL } from './config.js';
+    
+    const resultDiv = document.getElementById('result');
+    
+    async function testAPI(endpoint, model, payload) {
+      resultDiv.innerHTML = "Testing API...\n";
+      resultDiv.classList.remove('error');
+      
+      try {
+        const url = `https://generativelanguage.googleapis.com/${endpoint}/models/${model}:generateContent?key=${GEMINI_API_KEY}`;
+        
+        resultDiv.innerHTML += `URL: ${url}\n\n`;
+        resultDiv.innerHTML += `Payload: ${JSON.stringify(payload, null, 2)}\n\n`;
+        
+        const start = performance.now();
+        const response = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const timeElapsed = Math.round(performance.now() - start);
+        
+        resultDiv.innerHTML += `Response status: ${response.status} (${timeElapsed}ms)\n\n`;
+        
+        const responseText = await response.text();
+        
+        try {
+          const data = JSON.parse(responseText);
+          resultDiv.innerHTML += `Response: ${JSON.stringify(data, null, 2)}\n`;
+          
+          if (data.candidates && data.candidates[0] && data.candidates[0].content) {
+            resultDiv.innerHTML += `\nText response: ${data.candidates[0].content.parts[0].text}\n`;
+          }
+        } catch (e) {
+          resultDiv.innerHTML += `Response text (not JSON): ${responseText}\n`;
+        }
+        
+      } catch (error) {
+        resultDiv.classList.add('error');
+        resultDiv.innerHTML += `Error: ${error.message}\n`;
+        console.error('API test error:', error);
+      }
+    }
+    
+    document.getElementById('test1').addEventListener('click', () => {
+      testAPI('v1beta', 'gemini-pro', {
+        contents: [{ parts: [{ text: "Hello from the test page!" }] }]
+      });
+    });
+    
+    document.getElementById('test2').addEventListener('click', () => {
+      testAPI('v1', 'gemini-pro', {
+        contents: [{ parts: [{ text: "Hello from the test page!" }] }]
+      });
+    });
+    
+    document.getElementById('test3').addEventListener('click', () => {
+      testAPI('v1beta', 'gemini-pro', {
+        prompt: { text: "Hello from the test page with simple payload!" }
+      });
+    });
+  </script>
+</body>
+</html> 

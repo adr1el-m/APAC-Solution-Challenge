@@ -1,0 +1,59 @@
+{
+  "diseases": [
+    {
+      "id": "blast-rice",
+      "name": "Rice Blast",
+      "crop": "Rice",
+      "symptoms": ["Diamond-shaped lesions", "White/grayish center", "Brown/reddish-brown borders"],
+      "causes": ["Fungus: Magnaporthe oryzae", "High humidity", "Nitrogen excess"],
+      "treatments": ["Fungicides", "Resistant varieties", "Balanced fertilization"],
+      "prevention": ["Crop rotation", "Field sanitation", "Proper spacing"],
+      "imageURL": "/images/diseases/rice-blast.jpg",
+      "severity": "High"
+    },
+    {
+      "id": "blight-potato",
+      "name": "Late Blight",
+      "crop": "Potato",
+      "symptoms": ["Dark water-soaked spots", "White fungal growth", "Rapid wilting"],
+      "causes": ["Fungus: Phytophthora infestans", "Cool wet weather", "Poor drainage"],
+      "treatments": ["Copper-based fungicides", "Crop destruction (severe cases)"],
+      "prevention": ["Resistant varieties", "Good air circulation", "Proper irrigation"],
+      "imageURL": "/images/diseases/potato-blight.jpg",
+      "severity": "High"
+    },
+    {
+      "id": "spot-tomato",
+      "name": "Bacterial Spot",
+      "crop": "Tomato",
+      "symptoms": ["Small dark spots", "Yellowing leaves", "Defoliation"],
+      "causes": ["Bacteria: Xanthomonas spp.", "Warm humid conditions", "Overhead irrigation"],
+      "treatments": ["Copper-based bactericides", "Remove infected plants"],
+      "prevention": ["Crop rotation", "Drip irrigation", "Resistant varieties"],
+      "imageURL": "/images/diseases/tomato-spot.jpg",
+      "severity": "Medium"
+    },
+    {
+      "id": "rust-wheat",
+      "name": "Wheat Rust",
+      "crop": "Wheat",
+      "symptoms": ["Orange-red pustules", "Stunted growth", "Reduced yield"],
+      "causes": ["Fungi: Puccinia spp.", "Moderate temperatures", "High humidity"],
+      "treatments": ["Fungicides", "Early harvest if severe"],
+      "prevention": ["Resistant varieties", "Crop rotation", "Proper spacing"],
+      "imageURL": "/images/diseases/wheat-rust.jpg",
+      "severity": "High"
+    },
+    {
+      "id": "mosaic-cassava",
+      "name": "Cassava Mosaic",
+      "crop": "Cassava",
+      "symptoms": ["Yellow/green mosaic pattern", "Leaf distortion", "Stunted growth"],
+      "causes": ["Virus: Cassava mosaic virus", "Whitefly transmission"],
+      "treatments": ["No cure - remove infected plants"],
+      "prevention": ["Virus-free planting material", "Whitefly control", "Resistant varieties"],
+      "imageURL": "/images/diseases/cassava-mosaic.jpg",
+      "severity": "High"
+    }
+  ]
+} 
