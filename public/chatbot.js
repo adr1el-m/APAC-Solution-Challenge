@@ -2,6 +2,8 @@ import { GEMINI_API_KEY, GEMINI_MODEL, AI_CONFIG, FEATURES, DATABASE } from './c
 
 /* Pulsohana AI-powered Chatbot with Google Gemini/Gemma Integration */
 
+console.log("Initializing Pulsohana AI Chatbot...");
+
 // Initialize conversation memory
 const conversationMemory = {
   messages: [],
