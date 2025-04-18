@@ -2,42 +2,223 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#000000" />
-    <meta
-      name="description"
-      content="Web site created using create-react-app"
-    />
-    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
-    <!--
-      manifest.json provides metadata used when your web app is installed on a
-      user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
-    -->
-    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
-    <!--
-      Notice the use of %PUBLIC_URL% in the tags above.
-      It will be replaced with the URL of the `public` folder during the build.
-      Only files inside the `public` folder can be referenced from the HTML.
+    <title>CropSense AI</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
 
-      Unlike "/favicon.ico" or "favicon.ico", "%PUBLIC_URL%/favicon.ico" will
-      work correctly both with client-side routing and a non-root public URL.
-      Learn how to configure a non-root public URL by running `npm run build`.
-    -->
-    <title>React App</title>
+      :root {
+        --dark-blue: #060e21;
+        --green: #10df6f;
+        --orange: #e96d1f;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        min-height: 100vh;
+        background: var(--dark-blue);
+        color: white;
+        overflow-x: hidden;
+      }
+
+      .parallax-container {
+        position: fixed;
+        width: 100%;
+        height: 100%;
+        perspective: 1000px;
+        z-index: -1;
+      }
+
+      .parallax-bg {
+        position: absolute;
+        width: 150%;
+        height: 150%;
+        top: -25%;
+        left: -25%;
+        background: 
+          radial-gradient(circle at 20% 20%, var(--green) 0%, transparent 25%),
+          radial-gradient(circle at 80% 80%, var(--orange) 0%, transparent 25%),
+          var(--dark-blue);
+        transform-style: preserve-3d;
+        will-change: transform;
+        transform: translateZ(-10px) scale(2);
+        filter: blur(20px);
+        animation: bgFloat 20s ease-in-out infinite alternate;
+      }
+
+      @keyframes bgFloat {
+        0% { transform: translateZ(-10px) scale(2) rotate(0deg); }
+        100% { transform: translateZ(-10px) scale(2) rotate(5deg); }
+      }
+
+      .glass-card {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 3rem;
+        margin: 2rem;
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+        transform-style: preserve-3d;
+        transform: translateZ(0);
+        transition: transform 0.3s ease;
+      }
+
+      .glass-card:hover {
+        transform: translateY(-5px) translateZ(10px);
+      }
+
+      main {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+        position: relative;
+        z-index: 1;
+      }
+
+      .content {
+        max-width: 800px;
+        text-align: center;
+      }
+
+      h1 {
+        font-size: 4rem;
+        font-weight: 800;
+        margin-bottom: 1rem;
+        background: linear-gradient(135deg, var(--green), var(--orange));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: titleFloat 3s ease-in-out infinite;
+      }
+
+      @keyframes titleFloat {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-10px); }
+      }
+
+      p {
+        font-size: 1.5rem;
+        color: rgba(255, 255, 255, 0.9);
+        margin-bottom: 2rem;
+        line-height: 1.6;
+      }
+
+      .features {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin: 3rem 0;
+      }
+
+      .feature {
+        padding: 1.5rem;
+        border-radius: 15px;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        transition: transform 0.3s ease;
+      }
+
+      .feature:hover {
+        transform: translateY(-5px);
+        background: rgba(255, 255, 255, 0.05);
+      }
+
+      .feature h3 {
+        color: var(--green);
+        margin-bottom: 0.5rem;
+      }
+
+      .feature p {
+        font-size: 1rem;
+        opacity: 0.8;
+      }
+
+      .cta-button {
+        background: linear-gradient(135deg, var(--green), var(--orange));
+        color: white;
+        border: none;
+        padding: 1rem 2.5rem;
+        font-size: 1.2rem;
+        border-radius: 50px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-weight: 600;
+        box-shadow: 0 4px 15px rgba(16, 223, 111, 0.3);
+      }
+
+      .cta-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(16, 223, 111, 0.4);
+      }
+
+      @media (max-width: 768px) {
+        h1 {
+          font-size: 2.5rem;
+        }
+        
+        p {
+          font-size: 1.2rem;
+        }
+
+        .glass-card {
+          padding: 2rem;
+          margin: 1rem;
+        }
+      }
+    </style>
   </head>
   <body>
-    <noscript>You need to enable JavaScript to run this app.</noscript>
-    <div id="root"></div>
-    <!--
-      This HTML file is a template.
-      If you open it directly in the browser, you will see an empty page.
+    <div class="parallax-container">
+      <div class="parallax-bg"></div>
+            </div>
+    <main>
+      <div class="glass-card">
+        <div class="content">
+          <h1>CropSense AI</h1>
+          <p>Revolutionizing agriculture with AI-powered insights for smarter farming decisions</p>
+          
+          <div class="features">
+            <div class="feature">
+              <h3>Smart Analysis</h3>
+              <p>Real-time crop health monitoring and disease detection</p>
+              </div>
+            <div class="feature">
+              <h3>Yield Prediction</h3>
+              <p>AI-driven forecasting for optimal harvest timing</p>
+                </div>
+            <div class="feature">
+              <h3>Resource Optimization</h3>
+              <p>Intelligent water and nutrient management</p>
+              </div>
+            </div>
 
-      You can add webfonts, meta tags, or analytics to this file.
-      The build step will place the bundled scripts into the <body> tag.
+          <button class="cta-button">Start Growing Smarter</button>
+            </div>
+          </div>
+    </main>
 
-      To begin the development, run `npm start` or `yarn start`.
-      To create a production bundle, use `npm run build` or `yarn build`.
-    -->
+    <script>
+      // Parallax effect
+      document.addEventListener('mousemove', (e) => {
+        const parallaxBg = document.querySelector('.parallax-bg');
+        const mouseX = e.clientX / window.innerWidth - 0.5;
+        const mouseY = e.clientY / window.innerHeight - 0.5;
+        
+        parallaxBg.style.transform = `
+          translateZ(-10px) 
+          scale(2) 
+          rotateX(${mouseY * 10}deg) 
+          rotateY(${mouseX * 10}deg)
+        `;
+      });
+    </script>
   </body>
 </html>
