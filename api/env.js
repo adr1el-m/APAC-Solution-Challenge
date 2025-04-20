@@ -1,5 +1,20 @@
 // API endpoint that injects environment variables
 // This file uses CommonJS modules
+
+// Function to load .env file in development
+function loadEnvIfDevelopment() {
+  if (process.env.NODE_ENV !== 'production') {
+    try {
+      require('dotenv').config();
+    } catch (err) {
+      console.log('dotenv not available, skipping .env load');
+    }
+  }
+}
+
+// Try to load .env file
+loadEnvIfDevelopment();
+
 const handler = (req, res) => {
   // Set CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
