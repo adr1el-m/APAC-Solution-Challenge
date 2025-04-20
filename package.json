@@ -4,40 +4,29 @@
   "private": true,
   "description": "AI-powered smart agriculture platform for the Asia Pacific region",
   "dependencies": {
-    "@google-ai/generativelanguage": "^1.0.0",
-    "@headlessui/react": "^1.7.19",
-    "@heroicons/react": "^2.2.0",
-    "@testing-library/dom": "^10.4.0",
-    "@testing-library/jest-dom": "^6.6.3",
-    "@testing-library/react": "^16.3.0",
-    "@testing-library/user-event": "^13.5.0",
-    "axios": "^1.4.0",
-    "chart.js": "^4.3.0",
-    "firebase": "^11.6.0",
-    "framer-motion": "^10.18.0",
-    "leaflet": "^1.9.4",
     "react": "^18.2.0",
-    "react-chartjs-2": "^5.2.0",
     "react-dom": "^18.2.0",
-    "react-intersection-observer": "^9.16.0",
-    "react-leaflet": "^4.2.1",
     "react-scripts": "5.0.1",
-    "react-webcam": "^7.1.1",
+    "framer-motion": "^10.18.0",
+    "firebase": "^11.6.0",
+    "axios": "^1.4.0",
+    "@google-ai/generativelanguage": "^1.0.0"
+  },
+  "devDependencies": {
     "tailwindcss": "^3.4.0",
     "autoprefixer": "^10.4.16",
-    "postcss": "^8.4.32",
-    "web-vitals": "^2.1.4"
+    "postcss": "^8.4.32"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "postinstall": "npx tailwindcss init -p"
   },
   "eslintConfig": {
     "extends": [
-      "react-app",
-      "react-app/jest"
+      "react-app"
     ]
   },
   "browserslist": {
@@ -60,11 +49,8 @@
     "agriculture",
     "ai",
     "gemini",
-    "gemma",
     "farming",
-    "asia-pacific",
-    "crop-management",
-    "food-security"
+    "crop-management"
   ],
   "author": "CropSense AI Team",
   "license": "MIT"
