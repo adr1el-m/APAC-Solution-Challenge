@@ -1,13 +1,9 @@
 {
   "version": 2,
   "buildCommand": "npm install -D tailwindcss postcss autoprefixer && npm run build",
-  "framework": null,
   "outputDirectory": "build",
-  "routes": [
-    {
-      "src": "/env.js",
-      "dest": "/api/env.js"
-    }
+  "rewrites": [
+    { "source": "/env.js", "destination": "/api/env.js" }
   ],
   "github": {
     "silent": true
