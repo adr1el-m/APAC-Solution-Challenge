@@ -11,13 +11,6 @@ const Projects = () => {
       link: '#disease-detection'
     },
     {
-      title: 'Smart Irrigation System',
-      description: 'Precision water management that saves up to 60% on water usage while improving crop health. Our IoT sensors and ML algorithms optimize irrigation based on real-time soil conditions and weather forecasts.',
-      tech: ['IoT Sensors', 'Machine Learning', 'Weather API', 'Cloud Dashboard'],
-      image: '/projects/smart-irrigation.jpg',
-      link: '#smart-irrigation'
-    },
-    {
       title: 'Intelligent Crop Advisor',
       description: 'AI-driven recommendations that increase yields by 30% on average. Get personalized planting schedules, fertilizer plans, and market insights tailored to your specific land, climate, and crop varieties.',
       tech: ['Gemini AI', 'Predictive Analytics', 'Market API', 'Mobile App'],

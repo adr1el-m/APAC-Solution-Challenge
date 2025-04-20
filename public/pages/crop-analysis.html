@@ -1,0 +1,1958 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Advanced Crop Analysis - CropSense AI</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+  <!-- Include environment variables script -->
+  <script src="/env.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --dark-blue: #060e21;
+      --green: #10df6f;
+      --light-green: #4cff96;
+      --orange: #e96d1f;
+      --light-text: rgba(255, 255, 255, 0.9);
+      --gray-bg: rgba(255, 255, 255, 0.05);
+      --gray-border: rgba(255, 255, 255, 0.1);
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      min-height: 100vh;
+      background: var(--dark-blue);
+      color: white;
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .parallax-container {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      perspective: 1000px;
+      z-index: -1;
+    }
+
+    .parallax-bg {
+      position: absolute;
+      width: 150%;
+      height: 150%;
+      top: -25%;
+      left: -25%;
+      background: 
+        radial-gradient(circle at 20% 20%, var(--green) 0%, transparent 25%),
+        radial-gradient(circle at 80% 80%, var(--orange) 0%, transparent 25%),
+        var(--dark-blue);
+      transform-style: preserve-3d;
+      will-change: transform;
+      transform: translateZ(-10px) scale(2);
+      filter: blur(20px);
+      animation: bgFloat 20s ease-in-out infinite alternate;
+    }
+
+    @keyframes bgFloat {
+      0% { transform: translateZ(-10px) scale(2) rotate(0deg); }
+      100% { transform: translateZ(-10px) scale(2) rotate(5deg); }
+    }
+
+    /* Header Styles */
+    header {
+      background: rgba(6, 14, 33, 0.8);
+      backdrop-filter: blur(10px);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      padding: 1rem 2rem;
+      border-bottom: 1px solid var(--gray-border);
+    }
+
+    .nav-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      text-decoration: none;
+      color: white;
+    }
+
+    .logo img {
+      height: 40px;
+    }
+
+    .logo h2 {
+      font-weight: 600;
+      font-size: 1.4rem;
+      background: linear-gradient(135deg, var(--green), var(--orange));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .main-nav {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+    }
+
+    .main-nav a {
+      color: white;
+      text-decoration: none;
+      font-size: 1rem;
+      font-weight: 500;
+      transition: color 0.3s;
+      position: relative;
+      padding: 0.5rem 0.8rem;
+      border-radius: 4px;
+    }
+
+    .main-nav a:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--green);
+    }
+
+    .main-nav a.active {
+      background: rgba(16, 223, 111, 0.15);
+      color: var(--green);
+    }
+
+    .user-menu {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .user-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--green), var(--orange));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      color: white;
+      cursor: pointer;
+    }
+
+    .logout-button {
+      background: transparent;
+      color: white;
+      border: 1px solid var(--green);
+      padding: 0.6rem 1.2rem;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-weight: 500;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .logout-button:hover {
+      background: var(--green);
+      color: var(--dark-blue);
+    }
+
+    /* Footer */
+    footer {
+      background: rgba(5, 11, 26, 0.9);
+      backdrop-filter: blur(10px);
+      padding: 1.5rem;
+      text-align: center;
+      border-top: 1px solid var(--gray-border);
+      margin-top: auto;
+    }
+
+    footer p {
+      color: var(--light-text);
+      font-size: 0.9rem;
+      opacity: 0.7;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .nav-container {
+        flex-wrap: wrap;
+      }
+      
+      .main-nav {
+        order: 3;
+        width: 100%;
+        margin-top: 1rem;
+        overflow-x: auto;
+        padding-bottom: 0.5rem;
+        justify-content: flex-start;
+      }
+    }
+
+    /* Crop Analysis Styles */
+    .crop-analysis-container {
+      max-width: 1200px;
+      margin: 2rem auto;
+      padding: 0 2rem;
+    }
+
+    .page-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .page-header h1 {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+      background: linear-gradient(135deg, var(--green), var(--orange));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .page-header p {
+      color: var(--light-text);
+      font-size: 1.1rem;
+    }
+
+    .analysis-options {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 2rem;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+      margin-bottom: 2rem;
+    }
+
+    .option-tabs {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding-bottom: 1rem;
+    }
+
+    .tab-btn {
+      background: transparent;
+      color: var(--light-text);
+      border: none;
+      padding: 0.8rem 1.5rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-size: 1rem;
+      font-weight: 500;
+    }
+
+    .tab-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+    }
+
+    .tab-btn.active {
+      background: rgba(16, 223, 111, 0.15);
+      color: var(--green);
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    /* Image Upload Tab */
+    .upload-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 2rem;
+    }
+
+    .upload-area {
+      width: 100%;
+      max-width: 500px;
+      height: 300px;
+      border: 2px dashed rgba(255, 255, 255, 0.3);
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .upload-area:hover {
+      border-color: var(--green);
+      background: rgba(16, 223, 111, 0.05);
+    }
+
+    .upload-area i {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      color: var(--light-green);
+    }
+
+    .upload-area p {
+      font-size: 1.2rem;
+      margin-bottom: 0.5rem;
+      color: var(--light-text);
+    }
+
+    .upload-area .or {
+      font-size: 0.9rem;
+      margin: 0.5rem 0;
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    .upload-btn {
+      background: linear-gradient(135deg, var(--green), var(--orange));
+      color: white;
+      padding: 0.8rem 1.5rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-size: 1rem;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+
+    .upload-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(16, 223, 111, 0.3);
+    }
+
+    .image-preview-container {
+      width: 100%;
+      max-width: 500px;
+      position: relative;
+      margin-top: 1rem;
+    }
+
+    .image-preview-container img {
+      width: 100%;
+      height: auto;
+      border-radius: 12px;
+      object-fit: contain;
+      max-height: 300px;
+    }
+
+    .remove-image-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: rgba(0, 0, 0, 0.6);
+      color: white;
+      border: none;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .remove-image-btn:hover {
+      background: rgba(255, 0, 0, 0.8);
+    }
+
+    /* AI Settings */
+    .ai-settings {
+      width: 100%;
+      max-width: 500px;
+      margin: 0 auto;
+    }
+
+    .ai-settings h3 {
+      font-size: 1.3rem;
+      margin-bottom: 1.5rem;
+      color: white;
+    }
+
+    .setting-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .setting-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      color: var(--light-text);
+      font-size: 0.95rem;
+    }
+
+    .select-input {
+      width: 100%;
+      padding: 0.8rem 1rem;
+      background: rgba(255, 255, 255, 0.07);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      color: white;
+      font-size: 1rem;
+      transition: all 0.3s;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 1rem center;
+      background-size: 1rem;
+    }
+
+    .select-input:focus {
+      outline: none;
+      border-color: var(--green);
+      box-shadow: 0 0 0 2px rgba(16, 223, 111, 0.2);
+    }
+
+    .analyze-btn {
+      width: 100%;
+      padding: 1rem;
+      background: linear-gradient(135deg, var(--green), var(--orange));
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.8rem;
+      margin-top: 2rem;
+    }
+
+    .analyze-btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(16, 223, 111, 0.3);
+    }
+
+    .analyze-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    /* Text Prompt Tab */
+    .prompt-container {
+      width: 100%;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    .prompt-container h3 {
+      font-size: 1.3rem;
+      margin-bottom: 1rem;
+      color: white;
+    }
+
+    .instruction {
+      color: var(--light-text);
+      margin-bottom: 1.5rem;
+      line-height: 1.5;
+    }
+
+    textarea {
+      width: 100%;
+      padding: 1rem;
+      background: rgba(255, 255, 255, 0.07);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      color: white;
+      font-size: 1rem;
+      transition: all 0.3s;
+      resize: vertical;
+      font-family: inherit;
+    }
+
+    textarea:focus {
+      outline: none;
+      border-color: var(--green);
+      box-shadow: 0 0 0 2px rgba(16, 223, 111, 0.2);
+    }
+
+    /* History Tab */
+    .history-container {
+      width: 100%;
+    }
+
+    .history-container h3 {
+      font-size: 1.3rem;
+      margin-bottom: 1.5rem;
+      color: white;
+    }
+
+    .empty-history {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 3rem;
+      color: rgba(255, 255, 255, 0.5);
+      text-align: center;
+    }
+
+    .empty-history i {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+    }
+
+    /* Analysis Results */
+    .analysis-results {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 2rem;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    }
+
+    .results-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding-bottom: 1rem;
+    }
+
+    .results-header h2 {
+      font-size: 1.8rem;
+      color: white;
+    }
+
+    .actions {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .action-btn {
+      background: transparent;
+      color: var(--light-text);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .action-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.3);
+    }
+
+    .loading-animation {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 3rem;
+    }
+
+    .spinner {
+      width: 50px;
+      height: 50px;
+      border: 4px solid rgba(16, 223, 111, 0.1);
+      border-left-color: var(--green);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-bottom: 1.5rem;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .loading-animation p {
+      color: var(--light-text);
+      font-size: 1.1rem;
+    }
+
+    /* Results Styling */
+    .results-section {
+      margin-bottom: 2rem;
+    }
+
+    .results-section h3 {
+      font-size: 1.6rem;
+      margin-bottom: 1.5rem;
+      color: white;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding-bottom: 0.5rem;
+    }
+
+    .result-item {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .result-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .result-label {
+      font-weight: 600;
+      color: var(--light-text);
+      margin-right: auto;
+    }
+
+    .confidence {
+      padding: 0.4rem 0.8rem;
+      border-radius: 50px;
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+
+    .confidence.high {
+      background: rgba(16, 223, 111, 0.15);
+      color: var(--green);
+    }
+
+    .confidence.medium {
+      background: rgba(255, 193, 7, 0.15);
+      color: #ffc107;
+    }
+
+    .confidence.low {
+      background: rgba(255, 87, 51, 0.15);
+      color: #ff5733;
+    }
+
+    .result-content h4 {
+      font-size: 1.2rem;
+      margin-bottom: 0.8rem;
+      color: white;
+    }
+
+    .result-content h5 {
+      font-size: 1.1rem;
+      margin: 1rem 0 0.5rem;
+      color: var(--light-text);
+    }
+
+    .result-content p {
+      color: var(--light-text);
+      margin-bottom: 1rem;
+      line-height: 1.6;
+    }
+
+    .result-content ul, 
+    .result-content ol {
+      margin-left: 1.5rem;
+      margin-bottom: 1rem;
+      color: var(--light-text);
+    }
+
+    .result-content li {
+      margin-bottom: 0.5rem;
+      line-height: 1.6;
+    }
+
+    .result-content .note {
+      font-style: italic;
+      font-size: 0.9rem;
+      opacity: 0.8;
+    }
+
+    /* Health Meter */
+    .health-meter {
+      width: 200px;
+      height: 12px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 50px;
+      overflow: hidden;
+      margin: 0 1rem;
+    }
+
+    .health-bar {
+      height: 100%;
+      background: linear-gradient(90deg, #ff5733, #ffc107, var(--green));
+      border-radius: 50px;
+    }
+
+    .health-score {
+      font-weight: 600;
+      color: white;
+    }
+
+    /* Nutrient Bars */
+    .nutrient-bars {
+      width: 100%;
+    }
+
+    .nutrient-bar {
+      display: flex;
+      align-items: center;
+      margin-bottom: 1rem;
+      gap: 1rem;
+    }
+
+    .nutrient-name {
+      width: 130px;
+      color: var(--light-text);
+    }
+
+    .bar-container {
+      flex-grow: 1;
+      height: 12px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 50px;
+      overflow: hidden;
+    }
+
+    .bar {
+      height: 100%;
+      background: linear-gradient(90deg, var(--green), var(--light-green));
+      border-radius: 50px;
+    }
+
+    .bar-value {
+      width: 80px;
+      text-align: right;
+      color: var(--light-text);
+    }
+
+    /* Concern Items */
+    .concern-item {
+      padding: 1rem;
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 8px;
+      margin-bottom: 1rem;
+    }
+
+    .concern-item h4 {
+      margin-bottom: 0.5rem;
+      color: white;
+    }
+
+    /* Error Message */
+    .error-message {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem;
+      text-align: center;
+    }
+
+    .error-message i {
+      font-size: 3rem;
+      color: #ff5733;
+      margin-bottom: 1rem;
+    }
+
+    .error-message p {
+      color: var(--light-text);
+      margin-bottom: 1.5rem;
+    }
+
+    .retry-btn {
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      border: none;
+      padding: 0.8rem 1.5rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-size: 1rem;
+    }
+
+    .retry-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    /* History Item */
+    .history-item {
+      display: flex;
+      align-items: center;
+      padding: 1rem;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      margin-bottom: 1rem;
+      transition: all 0.3s;
+    }
+
+    .history-item:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .history-icon {
+      width: 40px;
+      height: 40px;
+      background: rgba(16, 223, 111, 0.15);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--green);
+      margin-right: 1rem;
+    }
+
+    .history-details {
+      flex-grow: 1;
+    }
+
+    .history-details h4 {
+      font-size: 1.1rem;
+      margin-bottom: 0.3rem;
+      color: white;
+    }
+
+    .timestamp {
+      font-size: 0.9rem;
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    .history-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .view-btn {
+      background: transparent;
+      color: var(--green);
+      border: 1px solid var(--green);
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .view-btn:hover {
+      background: rgba(16, 223, 111, 0.1);
+    }
+    
+    .delete-btn {
+      background: transparent;
+      color: #ff3b30;
+      border: 1px solid rgba(255, 59, 48, 0.5);
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .delete-btn:hover {
+      background: rgba(255, 59, 48, 0.1);
+    }
+
+    /* Responsive styles for results */
+    @media (max-width: 768px) {
+      .result-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+      }
+      
+      .health-meter {
+        width: 100%;
+        margin: 0.5rem 0;
+      }
+      
+      .nutrient-bar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+      }
+      
+      .nutrient-name,
+      .bar-container,
+      .bar-value {
+        width: 100%;
+      }
+      
+      .bar-value {
+        text-align: left;
+      }
+    }
+
+    /* Print styles */
+    @media print {
+      body {
+        background: white;
+        color: black;
+      }
+
+      header, footer, .option-tabs, .actions {
+        display: none;
+      }
+
+      .crop-analysis-container {
+        padding: 0;
+      }
+
+      .page-header h1 {
+        color: black;
+      }
+
+      .page-header p {
+        color: #333;
+      }
+
+      .analysis-options, .analysis-results {
+        background: none;
+        border: none;
+        box-shadow: none;
+        padding: 0;
+      }
+
+      .result-item {
+        background: none;
+        border: 1px solid #ddd;
+      }
+
+      .result-content p, .result-content li {
+        color: #333;
+      }
+
+      .result-label {
+        color: black;
+      }
+    }
+
+    /* Result Content */
+    .result-content {
+      color: var(--light-text);
+      margin-bottom: 1rem;
+      line-height: 1.6;
+    }
+
+    .result-content ul, 
+    .result-content ol {
+      margin-left: 1.5rem;
+      margin-bottom: 1rem;
+      color: var(--light-text);
+    }
+
+    .result-content li {
+      margin-bottom: 0.5rem;
+      line-height: 1.6;
+    }
+
+    .result-content .note {
+      font-style: italic;
+      font-size: 0.9rem;
+      opacity: 0.8;
+    }
+
+    /* AI Analysis Content Styles */
+    .analysis-content h3 {
+      font-size: 1.4rem;
+      color: white;
+      margin: 1.5rem 0 0.8rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding-bottom: 0.5rem;
+    }
+
+    .analysis-content h4 {
+      font-size: 1.2rem;
+      color: var(--light-green);
+      margin: 1.2rem 0 0.6rem;
+    }
+
+    .analysis-content p {
+      margin-bottom: 1rem;
+    }
+
+    .analysis-content strong {
+      color: white;
+      font-weight: 600;
+    }
+
+    .analysis-content ul, 
+    .analysis-content ol {
+      margin: 0.8rem 0 1.2rem 1.5rem;
+    }
+
+    .analysis-content li {
+      margin-bottom: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="parallax-container">
+    <div class="parallax-bg"></div>
+  </div>
+
+  <!-- Header with Navigation -->
+  <header>
+    <nav class="nav-container">
+      <a href="../index.html" class="logo">
+        <img src="https://via.placeholder.com/40/10df6f/FFFFFF?text=CS" alt="CropSense Logo">
+        <h2>CropSense AI</h2>
+      </a>
+      
+      <ul class="main-nav">
+        <li><a href="dashboard.html">Dashboard</a></li>
+        <li><a href="crop-analysis.html" class="active">Crop Analysis</a></li>
+        <li><a href="#reports">Reports</a></li>
+        <li><a href="#settings">Settings</a></li>
+        <li><a href="profile.html">Profile</a></li>
+      </ul>
+      
+      <div class="user-menu">
+        <div class="user-avatar" id="userInitials">JS</div>
+        <button class="logout-button" id="logout-btn">Logout</button>
+      </div>
+    </nav>
+  </header>
+
+  <!-- Main Content - Advanced Crop Analysis -->
+  <main class="crop-analysis-container">
+    <div class="page-header">
+      <h1>Advanced Crop Analysis</h1>
+      <p>Analyze your crops using Google's Gemma and Vertex AI technologies</p>
+    </div>
+
+    <div class="analysis-options">
+      <div class="option-tabs">
+        <button class="tab-btn active" data-tab="image-upload">Image Analysis</button>
+        <button class="tab-btn" data-tab="text-prompt">Text Description</button>
+        <button class="tab-btn" data-tab="history">Analysis History</button>
+      </div>
+
+      <div class="tab-content active" id="image-upload">
+        <div class="upload-container">
+          <div class="upload-area" id="dropZone">
+            <i class="fas fa-cloud-upload-alt"></i>
+            <p>Drag and drop your image here</p>
+            <p class="or">OR</p>
+            <label for="cropImage" class="upload-btn">
+              <i class="fas fa-folder-open"></i>
+              Browse Files
+            </label>
+            <input type="file" id="cropImage" accept="image/*" hidden>
+          </div>
+          <div class="image-preview-container" id="previewContainer" style="display: none;">
+            <img id="imagePreview" src="" alt="Preview" />
+            <button class="remove-image-btn" id="removeImage">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+        </div>
+        
+        <div class="ai-settings">
+          <h3>AI Analysis Settings</h3>
+          <div class="setting-group">
+            <label for="aiModel">AI Model</label>
+            <select id="aiModel" class="select-input">
+              <option value="gemma-7b">Gemma 7B (Fast)</option>
+              <option value="gemini-pro-vision" selected>Gemini Pro Vision (Balanced)</option>
+              <option value="vertex-vision-t">Vertex AI Vision T (Advanced)</option>
+            </select>
+          </div>
+          
+          <div class="setting-group">
+            <label for="analysisType">Analysis Type</label>
+            <select id="analysisType" class="select-input">
+              <option value="disease">Disease Detection</option>
+              <option value="health">Plant Health Assessment</option>
+              <option value="fertilizer">Fertilizer Recommendations</option>
+              <option value="comprehensive" selected>Comprehensive Analysis</option>
+            </select>
+          </div>
+          
+          <button id="analyzeImageBtn" class="analyze-btn" disabled>
+            <i class="fas fa-microscope"></i>
+            Analyze Crop
+          </button>
+        </div>
+      </div>
+
+      <div class="tab-content" id="text-prompt">
+        <div class="prompt-container">
+          <h3>Describe Your Crop Issue</h3>
+          <p class="instruction">Provide details about your crop, symptoms, growing conditions, and any other relevant information.</p>
+          
+          <textarea id="cropDescription" rows="6" placeholder="e.g., My tomato plants have yellow leaves with brown spots mostly on the lower leaves. The plants are 2 months old, grown in sandy soil with moderate watering..."></textarea>
+          
+          <div class="ai-settings">
+            <div class="setting-group">
+              <label for="promptModel">AI Model</label>
+              <select id="promptModel" class="select-input">
+                <option value="gemma-7b">Gemma 7B (Fast)</option>
+                <option value="gemini-pro" selected>Gemini Pro (Advanced)</option>
+                <option value="vertex-text">Vertex AI Text (Expert)</option>
+              </select>
+            </div>
+            
+            <button id="analyzeTextBtn" class="analyze-btn">
+              <i class="fas fa-search"></i>
+              Get AI Analysis
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-content" id="history">
+        <div class="history-container">
+          <h3>Recent Analyses</h3>
+          <div class="history-list" id="analysisHistory">
+            <!-- History items will be populated dynamically -->
+            <div class="empty-history">
+              <i class="fas fa-history"></i>
+              <p>Your analysis history will appear here</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="analysis-results" id="resultsContainer" style="display: none;">
+      <div class="results-header">
+        <h2>Analysis Results</h2>
+        <div class="actions">
+          <button class="action-btn" id="saveResultsBtn">
+            <i class="fas fa-save"></i>
+            Save
+          </button>
+          <button class="action-btn" id="shareResultsBtn">
+            <i class="fas fa-share-alt"></i>
+            Share
+          </button>
+          <button class="action-btn" id="printResultsBtn">
+            <i class="fas fa-print"></i>
+            Print
+          </button>
+        </div>
+      </div>
+      
+      <div class="results-content">
+        <div class="loading-animation" id="loadingResults">
+          <div class="spinner"></div>
+          <p>Analyzing with Google AI...</p>
+        </div>
+        
+        <div class="results-sections" id="resultsContent" style="display: none;">
+          <!-- Results will be populated dynamically -->
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <p>&copy; 2023 CropSense AI. All rights reserved.</p>
+  </footer>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-app.js";
+    import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-auth.js";
+    import { firebaseConfig, GEMINI_API_KEY, AI_MODELS, AI_CONFIG } from '../config.js';
+    import { saveCropAnalysis, getCropAnalysisHistory, getCropAnalysisById, deleteCropAnalysis } from '../js/firestoredb.js';
+    
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth();
+    
+    document.addEventListener('DOMContentLoaded', function() {
+      // Get user data from localStorage
+      const firstName = localStorage.getItem('userFirstName') || '';
+      const lastName = localStorage.getItem('userLastName') || '';
+      
+      // Update user initials in avatar
+      const userInitials = document.getElementById('userInitials');
+      if (userInitials) {
+        const initials = firstName.charAt(0) + (lastName.charAt(0) || '');
+        userInitials.textContent = initials || 'U';
+      }
+      
+      // Handle logout
+      const logoutBtn = document.getElementById('logout-btn');
+      if (logoutBtn) {
+        logoutBtn.addEventListener('click', function() {
+          // Clear user data from localStorage
+          localStorage.removeItem('userFirstName');
+          localStorage.removeItem('userLastName');
+          localStorage.removeItem('userEmail');
+          localStorage.removeItem('userId');
+          localStorage.removeItem('rememberMe');
+          
+          // Sign out from Firebase
+          signOut(auth).then(() => {
+            // Redirect to login page
+            window.location.href = 'login.html';
+          }).catch((error) => {
+            console.error("Error signing out:", error);
+            // Still redirect to login page even if there's an error
+            window.location.href = 'login.html';
+          });
+        });
+      }
+
+      // ======= Crop Analysis Functionality =======
+      
+      // Tab switching
+      const tabButtons = document.querySelectorAll('.tab-btn');
+      const tabContents = document.querySelectorAll('.tab-content');
+      
+      tabButtons.forEach(button => {
+        button.addEventListener('click', () => {
+          // Remove active class from all tabs
+          tabButtons.forEach(btn => btn.classList.remove('active'));
+          tabContents.forEach(content => content.classList.remove('active'));
+          
+          // Add active class to clicked tab
+          button.classList.add('active');
+          const tabId = button.getAttribute('data-tab');
+          document.getElementById(tabId).classList.add('active');
+          
+          // Load history when the history tab is clicked
+          if (tabId === 'history') {
+            loadAnalysisHistory();
+          }
+        });
+      });
+      
+      // Load analysis history
+      async function loadAnalysisHistory() {
+        const historyList = document.getElementById('analysisHistory');
+        const user = auth.currentUser;
+        
+        if (!user) {
+          console.error("User not authenticated");
+          historyList.innerHTML = `
+            <div class="empty-history">
+              <i class="fas fa-exclamation-circle"></i>
+              <p>Please log in to view your analysis history</p>
+            </div>
+          `;
+          return;
+        }
+        
+        try {
+          // Show loading state
+          historyList.innerHTML = `
+            <div class="loading-animation">
+              <div class="spinner"></div>
+              <p>Loading your analysis history...</p>
+            </div>
+          `;
+          
+          // Get history from Firestore
+          const history = await getCropAnalysisHistory(user.uid);
+          
+          if (history.length === 0) {
+            historyList.innerHTML = `
+              <div class="empty-history">
+                <i class="fas fa-history"></i>
+                <p>Your analysis history will appear here</p>
+              </div>
+            `;
+            return;
+          }
+          
+          // Display history items
+          historyList.innerHTML = '';
+          history.forEach(item => {
+            const historyItem = document.createElement('div');
+            historyItem.className = 'history-item';
+            historyItem.innerHTML = `
+              <div class="history-icon">
+                <i class="fas fa-${item.inputType === 'image' ? 'image' : 'file-alt'}"></i>
+              </div>
+              <div class="history-details">
+                <h4>${item.analysisType.charAt(0).toUpperCase() + item.analysisType.slice(1).replace('-', ' ')} Analysis</h4>
+                <span class="timestamp">${item.createdAt.toLocaleString()}</span>
+              </div>
+              <div class="history-actions">
+                <button class="view-btn" data-id="${item.id}">View</button>
+                <button class="delete-btn" data-id="${item.id}">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </div>
+            `;
+            historyList.appendChild(historyItem);
+          });
+          
+          // Add event listeners to view buttons
+          document.querySelectorAll('.view-btn').forEach(btn => {
+            btn.addEventListener('click', async function() {
+              const analysisId = this.getAttribute('data-id');
+              await loadAnalysisById(analysisId);
+            });
+          });
+          
+          // Add event listeners to delete buttons
+          document.querySelectorAll('.delete-btn').forEach(btn => {
+            btn.addEventListener('click', async function() {
+              const analysisId = this.getAttribute('data-id');
+              if (confirm('Are you sure you want to delete this analysis?')) {
+                await deleteAnalysis(analysisId);
+              }
+            });
+          });
+        } catch (error) {
+          console.error("Error loading history:", error);
+          historyList.innerHTML = `
+            <div class="empty-history">
+              <i class="fas fa-exclamation-circle"></i>
+              <p>Failed to load history: ${error.message}</p>
+            </div>
+          `;
+        }
+      }
+      
+      // Load a specific analysis by ID
+      async function loadAnalysisById(analysisId) {
+        try {
+          // Show loading state
+          resultsContainer.style.display = 'block';
+          loadingResults.style.display = 'flex';
+          resultsContent.style.display = 'none';
+          
+          // Scroll to results
+          resultsContainer.scrollIntoView({ behavior: 'smooth' });
+          
+          // Get analysis from Firestore
+          const analysis = await getCropAnalysisById(analysisId);
+          
+          if (!analysis) {
+            throw new Error("Analysis not found");
+          }
+          
+          // Display the analysis
+          displayHistoricalAnalysis(analysis);
+        } catch (error) {
+          console.error("Error loading analysis:", error);
+          showErrorInResults('Error loading analysis: ' + error.message);
+        }
+      }
+      
+      // Display historical analysis
+      function displayHistoricalAnalysis(analysis) {
+        // Hide loading, show results
+        loadingResults.style.display = 'none';
+        resultsContent.style.display = 'block';
+        
+        // Generate HTML based on saved analysis
+        let resultsHTML = `
+          <div class="results-section">
+            <h3>${capitalizeFirstLetter(analysis.analysisType)} Analysis Results</h3>
+            
+            <div class="result-item">
+              <div class="result-header">
+                <span class="result-label">Analysis Powered by:</span>
+                <span class="confidence high">${analysis.modelUsed}</span>
+              </div>
+              <div class="result-content">
+                <p>This analysis was performed using ${analysis.modelUsed} to analyze your ${analysis.inputType === 'image' ? 'crop image' : 'description'}.</p>
+                <p class="timestamp">Analysis date: ${analysis.createdAt.toLocaleString()}</p>
+              </div>
+            </div>
+            
+            <div class="result-item">
+              <div class="result-header">
+                <span class="result-label">AI Analysis:</span>
+              </div>
+              <div class="result-content analysis-content">
+                ${analysis.formattedResponse}
+              </div>
+            </div>
+          </div>
+        `;
+        
+        // Display results
+        resultsContent.innerHTML = resultsHTML;
+      }
+      
+      // Delete an analysis
+      async function deleteAnalysis(analysisId) {
+        try {
+          await deleteCropAnalysis(analysisId);
+          // Reload history after deletion
+          loadAnalysisHistory();
+        } catch (error) {
+          console.error("Error deleting analysis:", error);
+          alert('Failed to delete analysis: ' + error.message);
+        }
+      }
+
+      // Image upload functionality
+      const dropZone = document.getElementById('dropZone');
+      const fileInput = document.getElementById('cropImage');
+      const previewContainer = document.getElementById('previewContainer');
+      const imagePreview = document.getElementById('imagePreview');
+      const removeImageBtn = document.getElementById('removeImage');
+      const analyzeImageBtn = document.getElementById('analyzeImageBtn');
+      
+      // Handle file selection
+      fileInput.addEventListener('change', handleFileSelect);
+      
+      // Handle drag and drop
+      ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, preventDefaults, false);
+      });
+      
+      function preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+      
+      ['dragenter', 'dragover'].forEach(eventName => {
+        dropZone.addEventListener(eventName, highlight, false);
+      });
+      
+      ['dragleave', 'drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, unhighlight, false);
+      });
+      
+      function highlight() {
+        dropZone.classList.add('highlight');
+      }
+      
+      function unhighlight() {
+        dropZone.classList.remove('highlight');
+      }
+      
+      dropZone.addEventListener('drop', handleDrop, false);
+      
+      function handleDrop(e) {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+        if (files.length) {
+          fileInput.files = files;
+          handleFileSelect();
+        }
+      }
+      
+      function handleFileSelect() {
+        if (fileInput.files && fileInput.files[0]) {
+          const file = fileInput.files[0];
+          
+          // Check if file is an image
+          if (!file.type.match('image.*')) {
+            alert('Please select an image file');
+            return;
+          }
+          
+          // Display preview
+          const reader = new FileReader();
+          reader.onload = function(e) {
+            imagePreview.src = e.target.result;
+            dropZone.style.display = 'none';
+            previewContainer.style.display = 'block';
+            analyzeImageBtn.disabled = false;
+          };
+          reader.readAsDataURL(file);
+        }
+      }
+      
+      // Remove image preview
+      removeImageBtn.addEventListener('click', function() {
+        imagePreview.src = '';
+        fileInput.value = '';
+        previewContainer.style.display = 'none';
+        dropZone.style.display = 'flex';
+        analyzeImageBtn.disabled = true;
+      });
+      
+      // Click on drop zone to trigger file input
+      dropZone.addEventListener('click', function() {
+        fileInput.click();
+      });
+
+      // ======= AI Analysis =======
+      
+      // Elements for Image Analysis
+      const resultsContainer = document.getElementById('resultsContainer');
+      const loadingResults = document.getElementById('loadingResults');
+      const resultsContent = document.getElementById('resultsContent');
+      
+      // Elements for Text Analysis
+      const cropDescription = document.getElementById('cropDescription');
+      const analyzeTextBtn = document.getElementById('analyzeTextBtn');
+      
+      // Handle Image Analysis
+      analyzeImageBtn.addEventListener('click', async function() {
+        // Show results container with loading animation
+        resultsContainer.style.display = 'block';
+        loadingResults.style.display = 'flex';
+        resultsContent.style.display = 'none';
+        
+        // Scroll to results
+        resultsContainer.scrollIntoView({ behavior: 'smooth' });
+        
+        // Get selected options
+        const model = document.getElementById('aiModel').value;
+        const analysisType = document.getElementById('analysisType').value;
+        
+        try {
+          // Get the image data
+          const imageData = imagePreview.src;
+          
+          // Call the actual Gemini API for analysis
+          const analysisPrompt = generateAnalysisPrompt(analysisType);
+          const results = await callGeminiVisionAPI(imageData, model, analysisPrompt);
+          
+          // Display the results
+          displayResults(results, analysisType, 'image', model);
+          
+        } catch (error) {
+          console.error("Analysis error:", error);
+          showErrorInResults('An error occurred during analysis: ' + error.message);
+        }
+      });
+      
+      // Handle Text Analysis
+      analyzeTextBtn.addEventListener('click', async function() {
+        // Validate text input
+        const description = cropDescription.value.trim();
+        if (!description) {
+          alert('Please enter a description of your crop issue');
+          return;
+        }
+        
+        // Show results container with loading animation
+        resultsContainer.style.display = 'block';
+        loadingResults.style.display = 'flex';
+        resultsContent.style.display = 'none';
+        
+        // Scroll to results
+        resultsContainer.scrollIntoView({ behavior: 'smooth' });
+        
+        // Get selected model
+        const model = document.getElementById('promptModel').value;
+        
+        try {
+          // Call the actual Gemini API for text analysis
+          const textPrompt = generateTextAnalysisPrompt(description);
+          const results = await callGeminiTextAPI(textPrompt, model);
+          
+          // Display the results
+          displayResults(results, 'comprehensive', 'text', model);
+          
+        } catch (error) {
+          console.error("Text analysis error:", error);
+          showErrorInResults('An error occurred during analysis: ' + error.message);
+        }
+      });
+      
+      // Generate prompt for image analysis based on analysis type
+      function generateAnalysisPrompt(analysisType) {
+        let prompt = "You are an agricultural expert AI. ";
+        
+        switch(analysisType) {
+          case 'disease':
+            prompt += "Analyze this crop image and provide a comprehensive disease detection analysis. " +
+                     "Identify any visible diseases, symptoms, and their severity. " +
+                     "Provide specific treatment recommendations and preventive measures. " +
+                     "If you cannot clearly identify the crop or a specific disease, note that and provide general observations.";
+            break;
+          case 'health':
+            prompt += "Analyze this crop image and provide a complete plant health assessment. " +
+                     "Evaluate overall plant health, identify any stress factors, nutrient deficiencies, or growth issues. " +
+                     "Provide recommendations to improve plant health. " +
+                     "If you cannot clearly identify the crop type, note that and provide general observations.";
+            break;
+          case 'fertilizer':
+            prompt += "Analyze this crop image and provide fertilizer recommendations. " +
+                     "Identify any visible nutrient deficiencies, soil issues, or growth problems. " +
+                     "Recommend specific fertilizers, application methods, and schedules based on visible symptoms. " +
+                     "If you cannot clearly identify the crop type, note that and provide general guidance.";
+            break;
+          case 'comprehensive':
+          default:
+            prompt += "Analyze this crop image comprehensively. Identify the plant/crop if possible. " +
+                     "Assess its overall health, detect any diseases or pests, identify nutrient deficiencies, " +
+                     "and provide detailed recommendations for care, treatment, and fertilization. " +
+                     "Include growth stage assessment and yield potential if visible. " +
+                     "If you cannot clearly identify the crop type, note that and provide general observations.";
+            break;
+        }
+        
+        prompt += " Present your analysis in a clear, structured format with sections for identification, observations, problems detected, and recommendations.";
+        
+        return prompt;
+      }
+      
+      // Generate prompt for text analysis
+      function generateTextAnalysisPrompt(description) {
+        return `You are an agricultural expert AI. Based on this description of a crop issue, provide a comprehensive analysis: "${description}"\n\n` +
+               "Identify the likely crop if mentioned, any diseases or pests that match the symptoms, potential nutritional issues, " +
+               "and recommend specific treatments or interventions. If there's not enough information to make a definitive diagnosis, " +
+               "list the most probable issues and what additional information would be helpful. " +
+               "Present your analysis in a clear, structured format with sections for identification, likely issues, and recommendations.";
+      }
+      
+      // Function to call Gemini Vision API for image analysis
+      async function callGeminiVisionAPI(imageData, model, prompt) {
+        let modelName;
+        let apiEndpoint;
+        
+        // Determine which model to use
+        if (model.includes("gemma")) {
+          modelName = "Gemma 7B";
+          // For Gemma, we would use a different endpoint, but for now we'll use Gemini
+          apiEndpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=${GEMINI_API_KEY}`;
+        } else if (model.includes("gemini")) {
+          modelName = "Gemini Pro Vision";
+          apiEndpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=${GEMINI_API_KEY}`;
+        } else if (model.includes("vertex")) {
+          modelName = "Vertex AI Vision";
+          // For Vertex, we would use a different endpoint, but for now we'll use Gemini
+          apiEndpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=${GEMINI_API_KEY}`;
+        }
+        
+        document.querySelector('.loading-animation p').textContent = `Analyzing with ${modelName}...`;
+        
+        // Prepare the image data for API
+        // Remove the data:image/jpeg;base64, part if it exists
+        const base64Image = imageData.split(',')[1];
+        
+        // Prepare the request payload
+        const requestBody = {
+          contents: [
+            {
+              parts: [
+                { text: prompt },
+                {
+                  inline_data: {
+                    mime_type: "image/jpeg",
+                    data: base64Image
+                  }
+                }
+              ]
+            }
+          ],
+          generation_config: {
+            temperature: AI_CONFIG.temperature,
+            max_output_tokens: AI_CONFIG.maxOutputTokens,
+            top_p: AI_CONFIG.topP,
+            top_k: AI_CONFIG.topK
+          }
+        };
+        
+        // Make the API call
+        const response = await fetch(apiEndpoint, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(requestBody)
+        });
+        
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(`API error: ${errorData.error.message || response.statusText}`);
+        }
+        
+        const data = await response.json();
+        
+        // Extract the text response from Gemini
+        if (data.candidates && data.candidates[0] && data.candidates[0].content) {
+          return {
+            modelUsed: modelName,
+            analysisText: data.candidates[0].content.parts[0].text
+          };
+        } else {
+          throw new Error("Unexpected API response format");
+        }
+      }
+      
+      // Function to call Gemini API for text analysis
+      async function callGeminiTextAPI(prompt, model) {
+        let modelName;
+        let apiEndpoint;
+        
+        // Determine which model to use
+        if (model.includes("gemma")) {
+          modelName = "Gemma 7B";
+          // For Gemma, we would use a different endpoint, but for now we'll use Gemini
+          apiEndpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=${GEMINI_API_KEY}`;
+        } else if (model.includes("gemini")) {
+          modelName = "Gemini Pro";
+          apiEndpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=${GEMINI_API_KEY}`;
+        } else if (model.includes("vertex")) {
+          modelName = "Vertex AI";
+          // For Vertex, we would use a different endpoint, but for now we'll use Gemini
+          apiEndpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=${GEMINI_API_KEY}`;
+        }
+        
+        document.querySelector('.loading-animation p').textContent = `Analyzing with ${modelName}...`;
+        
+        // Prepare the request payload
+        const requestBody = {
+          contents: [
+            {
+              parts: [
+                { text: prompt }
+              ]
+            }
+          ],
+          generation_config: {
+            temperature: AI_CONFIG.temperature,
+            max_output_tokens: AI_CONFIG.maxOutputTokens,
+            top_p: AI_CONFIG.topP,
+            top_k: AI_CONFIG.topK
+          }
+        };
+        
+        // Make the API call
+        const response = await fetch(apiEndpoint, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(requestBody)
+        });
+        
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(`API error: ${errorData.error.message || response.statusText}`);
+        }
+        
+        const data = await response.json();
+        
+        // Extract the text response from Gemini
+        if (data.candidates && data.candidates[0] && data.candidates[0].content) {
+          return {
+            modelUsed: modelName,
+            analysisText: data.candidates[0].content.parts[0].text
+          };
+        } else {
+          throw new Error("Unexpected API response format");
+        }
+      }
+      
+      // Function to display results
+      function displayResults(results, analysisType, inputType, modelType) {
+        // Hide loading, show results
+        loadingResults.style.display = 'none';
+        resultsContent.style.display = 'block';
+        
+        // Format the AI response with Markdown
+        const formattedResponse = formatAIResponse(results.analysisText);
+        
+        // Generate HTML based on AI results
+        let resultsHTML = `
+          <div class="results-section">
+            <h3>${capitalizeFirstLetter(analysisType)} Analysis Results</h3>
+            
+            <div class="result-item">
+              <div class="result-header">
+                <span class="result-label">Analysis Powered by:</span>
+                <span class="confidence high">${results.modelUsed}</span>
+              </div>
+              <div class="result-content">
+                <p>This analysis was performed using ${results.modelUsed} to analyze your ${inputType === 'image' ? 'crop image' : 'description'}.</p>
+              </div>
+            </div>
+            
+            <div class="result-item">
+              <div class="result-header">
+                <span class="result-label">AI Analysis:</span>
+              </div>
+              <div class="result-content analysis-content">
+                ${formattedResponse}
+              </div>
+            </div>
+          </div>
+        `;
+        
+        // Display results
+        resultsContent.innerHTML = resultsHTML;
+        
+        // Save analysis data
+        const analysisData = {
+          analysisType,
+          inputType,
+          modelType,
+          modelUsed: results.modelUsed,
+          analysisText: results.analysisText,
+          formattedResponse: formattedResponse
+        };
+        
+        // Add image data if it's an image analysis
+        if (inputType === 'image') {
+          // Store a thumbnail version of the image
+          const thumbnailImage = generateThumbnail(imagePreview.src);
+          analysisData.thumbnailImage = thumbnailImage;
+        }
+        
+        // If it's a text analysis, store the description
+        if (inputType === 'text') {
+          analysisData.description = cropDescription.value.trim();
+        }
+        
+        // Save to history in Firestore
+        saveToHistory(analysisData);
+      }
+      
+      // Generate a smaller thumbnail version of the image
+      function generateThumbnail(imageData) {
+        try {
+          // Use a canvas to resize the image
+          const canvas = document.createElement('canvas');
+          const img = new Image();
+          img.src = imageData;
+          
+          // Set thumbnail dimensions
+          const maxWidth = 200;
+          const maxHeight = 150;
+          
+          // Calculate new dimensions while maintaining aspect ratio
+          let width = img.width;
+          let height = img.height;
+          
+          if (width > maxWidth) {
+            height = Math.round(height * (maxWidth / width));
+            width = maxWidth;
+          }
+          
+          if (height > maxHeight) {
+            width = Math.round(width * (maxHeight / height));
+            height = maxHeight;
+          }
+          
+          // Resize image on canvas
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+          
+          // Return as base64 data URL
+          return canvas.toDataURL('image/jpeg', 0.7);
+        } catch (error) {
+          console.error("Error generating thumbnail:", error);
+          return null;
+        }
+      }
+      
+      // Format the AI response with basic Markdown-like formatting
+      function formatAIResponse(text) {
+        if (!text) return "<p>No analysis could be generated.</p>";
+        
+        // Replace newlines with <br> tags
+        let formatted = text.replace(/\n\n/g, '</p><p>').replace(/\n/g, '<br>');
+        
+        // Wrap in paragraph if not already
+        if (!formatted.startsWith('<p>')) {
+          formatted = '<p>' + formatted;
+        }
+        if (!formatted.endsWith('</p>')) {
+          formatted = formatted + '</p>';
+        }
+        
+        // Add some styling for common markdown-like elements
+        // Bold
+        formatted = formatted.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+        
+        // Headers (### Header)
+        formatted = formatted.replace(/### (.*?)(?:\n|<br>)/g, '<h4>$1</h4>');
+        formatted = formatted.replace(/## (.*?)(?:\n|<br>)/g, '<h3>$1</h3>');
+        formatted = formatted.replace(/# (.*?)(?:\n|<br>)/g, '<h3>$1</h3>');
+        
+        // Bullet lists
+        formatted = formatted.replace(/- (.*?)(?:<br>|<\/p>)/g, '<li>$1</li>');
+        formatted = formatted.replace(/<li>(.*?)<\/li>(?:<li>)/g, '<li>$1</li>');
+        formatted = formatted.replace(/<p>(<li>.*?<\/li>)<\/p>/g, '<ul>$1</ul>');
+        
+        // Numbered lists
+        formatted = formatted.replace(/(\d+)\. (.*?)(?:<br>|<\/p>)/g, '<li>$2</li>');
+        formatted = formatted.replace(/<p>(<li>.*?<\/li>)<\/p>/g, '<ol>$1</ol>');
+        
+        return formatted;
+      }
+      
+      // Helper functions
+      function capitalizeFirstLetter(string) {
+        return string.charAt(0).toUpperCase() + string.slice(1);
+      }
+      
+      // Function to show error in results
+      function showErrorInResults(errorMessage) {
+        loadingResults.style.display = 'none';
+        resultsContent.style.display = 'block';
+        
+        resultsContent.innerHTML = `
+          <div class="error-message">
+            <i class="fas fa-exclamation-circle"></i>
+            <p>${errorMessage}</p>
+            <button class="retry-btn">Try Again</button>
+          </div>
+        `;
+        
+        document.querySelector('.retry-btn').addEventListener('click', function() {
+          resultsContainer.style.display = 'none';
+        });
+      }
+      
+      // Function to save analysis to history
+      async function saveToHistory(analysisData) {
+        try {
+          const user = auth.currentUser;
+          
+          if (!user) {
+            console.error("User not authenticated");
+            return;
+          }
+          
+          // Save to Firestore
+          await saveCropAnalysis(user.uid, analysisData);
+          console.log("Analysis saved to history");
+          
+        } catch (error) {
+          console.error("Error saving to history:", error);
+        }
+      }
+      
+      // Load history when the page loads
+      if (auth.currentUser) {
+        // Check which tab is active
+        const activeTab = document.querySelector('.tab-btn.active');
+        if (activeTab && activeTab.getAttribute('data-tab') === 'history') {
+          loadAnalysisHistory();
+        }
+      } else {
+        // Add auth state changed listener
+        auth.onAuthStateChanged((user) => {
+          if (user) {
+            // Check which tab is active
+            const activeTab = document.querySelector('.tab-btn.active');
+            if (activeTab && activeTab.getAttribute('data-tab') === 'history') {
+              loadAnalysisHistory();
+            }
+          }
+        });
+      }
+
+      // Handle action buttons
+      document.getElementById('saveResultsBtn').addEventListener('click', function() {
+        alert('Analysis saved successfully!');
+      });
+      
+      document.getElementById('shareResultsBtn').addEventListener('click', function() {
+        alert('Sharing options coming soon!');
+      });
+      
+      document.getElementById('printResultsBtn').addEventListener('click', function() {
+        window.print();
+      });
+    });
+  </script>
+</body>
+</html> 

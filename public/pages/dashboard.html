@@ -101,38 +101,31 @@
       -webkit-text-fill-color: transparent;
     }
 
-    .nav-links {
+    .main-nav {
       display: flex;
       gap: 2rem;
       list-style: none;
     }
 
-    .nav-links a {
+    .main-nav a {
       color: white;
       text-decoration: none;
       font-size: 1rem;
       font-weight: 500;
       transition: color 0.3s;
       position: relative;
+      padding: 0.5rem 0.8rem;
+      border-radius: 4px;
     }
 
-    .nav-links a:hover {
+    .main-nav a:hover {
+      background: rgba(255, 255, 255, 0.1);
       color: var(--green);
     }
 
-    .nav-links a::after {
-      content: '';
-      position: absolute;
-      width: 0;
-      height: 2px;
-      bottom: -4px;
-      left: 0;
-      background: linear-gradient(90deg, var(--green), var(--orange));
-      transition: width 0.3s;
-    }
-
-    .nav-links a:hover::after {
-      width: 100%;
+    .main-nav a.active {
+      background: rgba(16, 223, 111, 0.15);
+      color: var(--green);
     }
 
     .user-menu {
@@ -280,6 +273,19 @@
 
     /* Responsive */
     @media (max-width: 768px) {
+      .nav-container {
+        flex-wrap: wrap;
+      }
+      
+      .main-nav {
+        order: 3;
+        width: 100%;
+        margin-top: 1rem;
+        overflow-x: auto;
+        padding-bottom: 0.5rem;
+        justify-content: flex-start;
+      }
+      
       .dashboard-grid {
         grid-template-columns: 1fr;
       }
@@ -299,16 +305,17 @@
         <h2>CropSense AI</h2>
       </a>
       
-      <ul class="nav-links">
-        <li><a href="#dashboard">Dashboard</a></li>
+      <ul class="main-nav">
+        <li><a href="dashboard.html" class="active">Dashboard</a></li>
         <li><a href="#analysis">Analysis</a></li>
         <li><a href="#reports">Reports</a></li>
         <li><a href="#settings">Settings</a></li>
+        <li><a href="profile.html">Profile</a></li>
       </ul>
       
       <div class="user-menu">
-        <div class="user-avatar" id="userInitials">U</div>
-        <button id="logout-btn" class="logout-button">Log Out</button>
+        <div class="user-avatar" id="userInitials">JS</div>
+        <button class="logout-button" id="logout-btn">Logout</button>
       </div>
     </nav>
   </header>
@@ -322,26 +329,10 @@
     
     <div class="dashboard-grid">
       <div class="dashboard-card">
-        <h2>Crop Analysis</h2>
-        <p>Upload images of your crops for instant disease detection and health analysis.</p>
+        <h2>Advanced Crop Analysis</h2>
+        <p>Upload images of your crops or describe issues for AI-powered disease detection, fertilizer recommendations, and health analysis using Gemma and Vertex AI.</p>
         <div class="card-footer">
-          <button class="card-btn">Get Started</button>
-        </div>
-      </div>
-      
-      <div class="dashboard-card">
-        <h2>Weather Forecast</h2>
-        <p>Access real-time weather data and forecasts to plan your farming activities effectively.</p>
-        <div class="card-footer">
-          <button class="card-btn">View Forecast</button>
-        </div>
-      </div>
-      
-      <div class="dashboard-card">
-        <h2>Irrigation Scheduler</h2>
-        <p>Generate optimal irrigation schedules based on soil type, crop needs, and weather conditions.</p>
-        <div class="card-footer">
-          <button class="card-btn">Schedule Now</button>
+          <a href="crop-analysis.html" class="card-btn">Get Started</a>
         </div>
       </div>
     </div>

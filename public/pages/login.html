@@ -101,38 +101,39 @@
       -webkit-text-fill-color: transparent;
     }
 
-    .nav-links {
+    .main-nav {
       display: flex;
       gap: 2rem;
       list-style: none;
     }
 
-    .nav-links a {
+    .main-nav a {
       color: white;
       text-decoration: none;
       font-size: 1rem;
       font-weight: 500;
       transition: color 0.3s;
       position: relative;
+      padding: 0.5rem 0.8rem;
+      border-radius: 4px;
     }
 
-    .nav-links a:hover {
+    .main-nav a:hover {
+      background: rgba(255, 255, 255, 0.1);
       color: var(--green);
     }
 
-    .nav-links a::after {
-      content: '';
-      position: absolute;
-      width: 0;
-      height: 2px;
-      bottom: -4px;
-      left: 0;
-      background: linear-gradient(90deg, var(--green), var(--orange));
-      transition: width 0.3s;
+    .main-nav a.active {
+      background: rgba(16, 223, 111, 0.15);
+      color: var(--green);
     }
 
-    .nav-links a:hover::after {
-      width: 100%;
+    .main-nav a::after {
+      content: none;
+    }
+
+    .main-nav a:hover::after {
+      width: 0;
     }
 
     .auth-buttons {
@@ -357,6 +358,16 @@
       text-decoration: underline;
     }
 
+    /* Login error message */
+    .login-error {
+      color: #ff3e3e;
+      background-color: rgba(255, 62, 62, 0.1);
+      padding: 10px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      font-size: 0.9rem;
+    }
+
     /* Footer */
     footer {
       background: rgba(5, 11, 26, 0.9);
@@ -375,6 +386,19 @@
 
     /* Responsive */
     @media (max-width: 768px) {
+      .nav-container {
+        flex-wrap: wrap;
+      }
+      
+      .main-nav {
+        order: 3;
+        width: 100%;
+        margin-top: 1rem;
+        overflow-x: auto;
+        padding-bottom: 0.5rem;
+        justify-content: flex-start;
+      }
+      
       .login-card {
         padding: 2rem;
       }
@@ -398,11 +422,12 @@
         <h2>CropSense AI</h2>
       </a>
       
-      <ul class="nav-links">
-        <li><a href="../index.html#features">Features</a></li>
-        <li><a href="../index.html#about">About</a></li>
-        <li><a href="../index.html#pricing">Pricing</a></li>
-        <li><a href="../index.html#contact">Contact</a></li>
+      <ul class="main-nav">
+        <li><a href="dashboard.html">Dashboard</a></li>
+        <li><a href="#analysis">Analysis</a></li>
+        <li><a href="#reports">Reports</a></li>
+        <li><a href="#settings">Settings</a></li>
+        <li><a href="profile.html">Profile</a></li>
       </ul>
       
       <div class="auth-buttons">
@@ -464,6 +489,7 @@
     <p>&copy; 2023 CropSense AI. All rights reserved.</p>
   </footer>
 
+  <!-- Load Firebase Authentication -->
   <script type="module" src="../js/login.js"></script>
 </body>
 </html>

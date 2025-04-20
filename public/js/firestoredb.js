@@ -1,331 +1,444 @@
-// Import Firebase Firestore functions
-import { getFirestore, doc, getDoc, setDoc, collection, addDoc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
-import { initializeApp } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-app.js";
-import { firebaseConfig } from "../config.js";
+/**
+ * Firestore Database Integration for Pulsohana
+ * 
+ * This module handles the integration with Firebase Firestore for storing
+ * and retrieving agricultural data, user profiles, and farm data.
+ */
 
-console.log("Firestore module loaded, config:", firebaseConfig);
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-app.js";
+import { 
+  getFirestore, 
+  collection, 
+  doc, 
+  addDoc, 
+  getDoc, 
+  getDocs,
+  updateDoc, 
+  deleteDoc,
+  query,
+  where,
+  orderBy,
+  limit,
+  serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.1.0/firebase-firestore.js";
+import { firebaseConfig } from '../config.js';
 
-// Initialize Firestore with the app
-let app;
-try {
-  app = initializeApp(firebaseConfig);
-  console.log("Firebase app initialized in firestoredb.js");
-} catch (error) {
-  if (error.code === 'app/duplicate-app') {
-    console.log("Firebase app already initialized, reusing existing app");
-    app = window.firebaseApp;
-  } else {
-    console.error("Error initializing Firebase app:", error);
-  }
-}
-
-// Store the app instance globally so it can be reused
-window.firebaseApp = app;
-
-// Initialize Firestore
-let db = getFirestore(app);
-console.log("Firestore initialized");
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
 /**
- * Initialize the Firestore database
- * @param {Object} app - Firebase app instance (optional, uses global app if not provided)
+ * Fetch user's farms data
+ * @param {string} userId - User ID
+ * @returns {Promise<Array>} Array of farm objects
  */
-export function initFirestore(app) {
-  if (!db) {
-    const appInstance = app || window.firebaseApp;
-    if (appInstance) {
-      db = getFirestore(appInstance);
-      console.log("Firestore initialized");
-    } else {
-      console.error("No Firebase app available to initialize Firestore");
-    }
-  }
-  return db;
-}
-
-/**
- * Get Firebase app from any module that might have initialized it
- * This helps avoid re-initialization errors
- */
-export function getFirebaseApp() {
-  // Look for the Firebase app instance in the global scope
-  const existingApp = window.firebaseApp;
-  if (existingApp) {
-    console.log("Using existing Firebase app");
-    // Initialize Firestore with existing app if needed
-    if (!db) {
-      db = getFirestore(existingApp);
-    }
-    return existingApp;
-  }
-  
-  // If no existing app, return null - caller should initialize
-  return null;
-}
-
-/**
- * Store user data in Firestore
- * @param {string} userId - Firebase Auth user ID
- * @param {Object} userData - User data to store
- * @returns {Promise} - Promise that resolves when data is stored
- */
-export async function storeUserData(userId, userData) {
-  if (!db) {
-    console.error("Firestore not initialized");
-    return Promise.reject("Firestore not initialized");
-  }
-  
+export async function getUserFarms(userId) {
   try {
-    console.log("Storing user data for:", userId, userData);
+    const farmsQuery = query(
+      collection(db, "farms"),
+      where("userId", "==", userId),
+      orderBy("createdAt", "desc")
+    );
     
-    // Add timestamp
-    userData.updatedAt = serverTimestamp();
+    const querySnapshot = await getDocs(farmsQuery);
+    const farms = [];
     
-    // If new user, also set createdAt timestamp
-    if (!userData.createdAt) {
-      userData.createdAt = serverTimestamp();
-    }
+    querySnapshot.forEach((doc) => {
+      farms.push({
+        id: doc.id,
+        ...doc.data()
+      });
+    });
     
-    // Set user data in Firestore
-    const userRef = doc(db, "users", userId);
-    await setDoc(userRef, userData, { merge: true });
-    console.log("User data stored successfully");
-    return true;
+    return farms;
   } catch (error) {
-    console.error("Error storing user data: ", error);
-    return Promise.reject(error);
+    console.error("Error getting farms:", error);
+    throw error;
   }
 }
 
 /**
- * Create user data in Firestore - alternative name for storeUserData
- * @param {string} userId - Firebase Auth user ID
- * @param {Object} userData - User data to store
- * @returns {Promise} - Promise that resolves when data is stored
+ * Add a new farm
+ * @param {Object} farmData - Farm data object
+ * @returns {Promise<string>} ID of the created farm
  */
-export async function createUserData(userId, userData) {
-  return storeUserData(userId, userData);
+export async function addFarm(farmData) {
+  try {
+    const farmWithTimestamp = {
+      ...farmData,
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp()
+    };
+    
+    const docRef = await addDoc(collection(db, "farms"), farmWithTimestamp);
+    return docRef.id;
+  } catch (error) {
+    console.error("Error adding farm:", error);
+    throw error;
+  }
 }
 
 /**
- * Get user data from Firestore
- * @param {string} userId - Firebase Auth user ID
- * @returns {Promise} - Promise that resolves with user data
+ * Update farm data
+ * @param {string} farmId - Farm ID
+ * @param {Object} farmData - Updated farm data
+ * @returns {Promise<void>}
  */
-export async function getUserData(userId) {
-  if (!db) {
-    console.error("Firestore not initialized");
-    return Promise.reject("Firestore not initialized");
+export async function updateFarm(farmId, farmData) {
+  try {
+    const farmRef = doc(db, "farms", farmId);
+    
+    const updateData = {
+      ...farmData,
+      updatedAt: serverTimestamp()
+    };
+    
+    await updateDoc(farmRef, updateData);
+  } catch (error) {
+    console.error("Error updating farm:", error);
+    throw error;
   }
-  
+}
+
+/**
+ * Delete a farm
+ * @param {string} farmId - Farm ID
+ * @returns {Promise<void>}
+ */
+export async function deleteFarm(farmId) {
+  try {
+    await deleteDoc(doc(db, "farms", farmId));
+  } catch (error) {
+    console.error("Error deleting farm:", error);
+    throw error;
+  }
+}
+
+/**
+ * Get farm by ID
+ * @param {string} farmId - Farm ID
+ * @returns {Promise<Object|null>} Farm object or null if not found
+ */
+export async function getFarmById(farmId) {
+  try {
+    const farmRef = doc(db, "farms", farmId);
+    const farmSnap = await getDoc(farmRef);
+    
+    if (farmSnap.exists()) {
+      return {
+        id: farmSnap.id,
+        ...farmSnap.data()
+      };
+    } else {
+      return null;
+    }
+  } catch (error) {
+    console.error("Error getting farm:", error);
+    throw error;
+  }
+}
+
+/**
+ * Add crop data to a farm
+ * @param {string} farmId - Farm ID
+ * @param {Object} cropData - Crop data
+ * @returns {Promise<string>} ID of the created crop document
+ */
+export async function addCropToFarm(farmId, cropData) {
+  try {
+    const cropWithTimestamp = {
+      ...cropData,
+      farmId,
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp()
+    };
+    
+    const docRef = await addDoc(collection(db, "crops"), cropWithTimestamp);
+    return docRef.id;
+  } catch (error) {
+    console.error("Error adding crop:", error);
+    throw error;
+  }
+}
+
+/**
+ * Get all crops for a farm
+ * @param {string} farmId - Farm ID
+ * @returns {Promise<Array>} Array of crop objects
+ */
+export async function getFarmCrops(farmId) {
+  try {
+    const cropsQuery = query(
+      collection(db, "crops"),
+      where("farmId", "==", farmId),
+      orderBy("plantingDate", "desc")
+    );
+    
+    const querySnapshot = await getDocs(cropsQuery);
+    const crops = [];
+    
+    querySnapshot.forEach((doc) => {
+      crops.push({
+        id: doc.id,
+        ...doc.data()
+      });
+    });
+    
+    return crops;
+  } catch (error) {
+    console.error("Error getting crops:", error);
+    throw error;
+  }
+}
+
+/**
+ * Save sensor data
+ * @param {string} farmId - Farm ID
+ * @param {Object} sensorData - Sensor data
+ * @returns {Promise<string>} ID of the created sensor data document
+ */
+export async function saveSensorData(farmId, sensorData) {
+  try {
+    const dataWithTimestamp = {
+      ...sensorData,
+      farmId,
+      timestamp: serverTimestamp()
+    };
+    
+    const docRef = await addDoc(collection(db, "sensorData"), dataWithTimestamp);
+    return docRef.id;
+  } catch (error) {
+    console.error("Error saving sensor data:", error);
+    throw error;
+  }
+}
+
+/**
+ * Get recent sensor data for a farm
+ * @param {string} farmId - Farm ID
+ * @param {number} limit - Maximum number of records to retrieve
+ * @returns {Promise<Array>} Array of sensor data objects
+ */
+export async function getRecentSensorData(farmId, limitCount = 100) {
+  try {
+    const dataQuery = query(
+      collection(db, "sensorData"),
+      where("farmId", "==", farmId),
+      orderBy("timestamp", "desc"),
+      limit(limitCount)
+    );
+    
+    const querySnapshot = await getDocs(dataQuery);
+    const sensorData = [];
+    
+    querySnapshot.forEach((doc) => {
+      sensorData.push({
+        id: doc.id,
+        ...doc.data()
+      });
+    });
+    
+    return sensorData;
+  } catch (error) {
+    console.error("Error getting sensor data:", error);
+    throw error;
+  }
+}
+
+/**
+ * Save a disease detection result
+ * @param {string} farmId - Farm ID
+ * @param {Object} detectionData - Disease detection data
+ * @returns {Promise<string>} ID of the created detection document
+ */
+export async function saveDiseaseDetection(farmId, detectionData) {
+  try {
+    const dataWithTimestamp = {
+      ...detectionData,
+      farmId,
+      detectedAt: serverTimestamp()
+    };
+    
+    const docRef = await addDoc(collection(db, "diseaseDetections"), dataWithTimestamp);
+    return docRef.id;
+  } catch (error) {
+    console.error("Error saving disease detection:", error);
+    throw error;
+  }
+}
+
+/**
+ * Get recent disease detections for a farm
+ * @param {string} farmId - Farm ID
+ * @returns {Promise<Array>} Array of disease detection objects
+ */
+export async function getRecentDiseaseDetections(farmId) {
+  try {
+    const detectionsQuery = query(
+      collection(db, "diseaseDetections"),
+      where("farmId", "==", farmId),
+      orderBy("detectedAt", "desc"),
+      limit(20)
+    );
+    
+    const querySnapshot = await getDocs(detectionsQuery);
+    const detections = [];
+    
+    querySnapshot.forEach((doc) => {
+      detections.push({
+        id: doc.id,
+        ...doc.data()
+      });
+    });
+    
+    return detections;
+  } catch (error) {
+    console.error("Error getting disease detections:", error);
+    throw error;
+  }
+}
+
+/**
+ * Save user settings
+ * @param {string} userId - User ID
+ * @param {Object} settings - User settings
+ * @returns {Promise<void>}
+ */
+export async function saveUserSettings(userId, settings) {
+  try {
+    const userRef = doc(db, "users", userId);
+    
+    const updateData = {
+      settings: settings,
+      updatedAt: serverTimestamp()
+    };
+    
+    await updateDoc(userRef, updateData);
+  } catch (error) {
+    console.error("Error saving user settings:", error);
+    throw error;
+  }
+}
+
+/**
+ * Get user settings
+ * @param {string} userId - User ID
+ * @returns {Promise<Object|null>} User settings or null if not found
+ */
+export async function getUserSettings(userId) {
   try {
     const userRef = doc(db, "users", userId);
     const userSnap = await getDoc(userRef);
     
-    if (userSnap.exists()) {
-      console.log("User data retrieved successfully");
-      return userSnap.data();
+    if (userSnap.exists() && userSnap.data().settings) {
+      return userSnap.data().settings;
     } else {
-      console.log("No user data found");
       return null;
     }
   } catch (error) {
-    console.error("Error getting user data: ", error);
-    return Promise.reject(error);
+    console.error("Error getting user settings:", error);
+    throw error;
   }
 }
 
 /**
- * Record login activity
- * @param {string} userId - Firebase Auth user ID
- * @param {Object} activityData - Login activity data
- * @returns {Promise} - Promise that resolves when activity is recorded
+ * Save a crop analysis record to the user's history
+ * @param {string} userId - User ID
+ * @param {Object} analysisData - Analysis data to save
+ * @returns {Promise<string>} ID of the created analysis record
  */
-export async function recordLoginActivity(userId, activityData) {
-  if (!db) {
-    console.error("Firestore not initialized");
-    return Promise.reject("Firestore not initialized");
-  }
-  
+export async function saveCropAnalysis(userId, analysisData) {
   try {
-    // Create activity record with timestamp
-    const loginData = {
-      ...activityData,
-      timestamp: serverTimestamp(),
-      userId: userId
+    const analysisWithTimestamp = {
+      ...analysisData,
+      userId,
+      createdAt: serverTimestamp()
     };
     
-    // Add login activity to collection
-    const activityRef = collection(db, "users", userId, "loginActivity");
-    await addDoc(activityRef, loginData);
+    const docRef = await addDoc(collection(db, "cropAnalysis"), analysisWithTimestamp);
+    return docRef.id;
+  } catch (error) {
+    console.error("Error saving crop analysis:", error);
+    throw error;
+  }
+}
+
+/**
+ * Get crop analysis history for a user
+ * @param {string} userId - User ID
+ * @param {number} limitCount - Maximum number of records to retrieve
+ * @returns {Promise<Array>} Array of analysis history objects
+ */
+export async function getCropAnalysisHistory(userId, limitCount = 10) {
+  try {
+    const historyQuery = query(
+      collection(db, "cropAnalysis"),
+      where("userId", "==", userId),
+      orderBy("createdAt", "desc"),
+      limit(limitCount)
+    );
     
-    // Update last login timestamp in user document
-    const userRef = doc(db, "users", userId);
-    await updateDoc(userRef, {
-      lastLogin: serverTimestamp()
+    const querySnapshot = await getDocs(historyQuery);
+    const history = [];
+    
+    querySnapshot.forEach((doc) => {
+      const data = doc.data();
+      // Convert Firebase timestamp to regular date if it exists
+      const createdAt = data.createdAt ? new Date(data.createdAt.seconds * 1000) : new Date();
+      
+      history.push({
+        id: doc.id,
+        ...data,
+        createdAt: createdAt
+      });
     });
     
-    console.log("Login activity recorded successfully");
-    return true;
+    return history;
   } catch (error) {
-    console.error("Error recording login activity: ", error);
-    return Promise.reject(error);
+    console.error("Error getting crop analysis history:", error);
+    throw error;
   }
 }
 
 /**
- * Record failed login attempt for security monitoring
- * @param {string} email - Email address that failed login
- * @returns {Promise} - Promise that resolves when attempt is recorded
+ * Get a specific crop analysis by ID
+ * @param {string} analysisId - Analysis ID
+ * @returns {Promise<Object|null>} Analysis object or null if not found
  */
-export async function recordFailedLoginAttempt(email) {
-  if (!db) {
-    console.error("Firestore not initialized");
-    return Promise.reject("Firestore not initialized");
-  }
-  
-  if (!email) return Promise.resolve(false);
-  
+export async function getCropAnalysisById(analysisId) {
   try {
-    // Normalize email to use as document ID (remove special chars)
-    const normalizedEmail = email.toLowerCase().replace(/[.#$]/g, '_');
+    const analysisRef = doc(db, "cropAnalysis", analysisId);
+    const analysisSnap = await getDoc(analysisRef);
     
-    // Get reference to failed logins document
-    const failedLoginRef = doc(db, "failedLogins", normalizedEmail);
-    const failedLoginSnap = await getDoc(failedLoginRef);
-    
-    if (failedLoginSnap.exists()) {
-      // Update existing record
-      const data = failedLoginSnap.data();
-      const attempts = data.attempts || [];
-      attempts.push(serverTimestamp());
+    if (analysisSnap.exists()) {
+      const data = analysisSnap.data();
+      // Convert Firebase timestamp to regular date if it exists
+      const createdAt = data.createdAt ? new Date(data.createdAt.seconds * 1000) : new Date();
       
-      // Keep only the last 10 attempts
-      const recentAttempts = attempts.slice(-10);
-      
-      await updateDoc(failedLoginRef, {
-        attempts: recentAttempts,
-        count: (data.count || 0) + 1,
-        lastAttempt: serverTimestamp()
-      });
-    } else {
-      // Create new record
-      await setDoc(failedLoginRef, {
-        email: email,
-        attempts: [serverTimestamp()],
-        count: 1,
-        lastAttempt: serverTimestamp(),
-        createdAt: serverTimestamp()
-      });
-    }
-    
-    console.log("Failed login attempt recorded");
-    return true;
-  } catch (error) {
-    console.error("Error recording failed login attempt: ", error);
-    return Promise.reject(error);
-  }
-}
-
-/**
- * Check if login is allowed (not rate limited)
- * @param {string} email - Email address to check
- * @returns {Promise} - Promise that resolves with login status
- */
-export async function checkLoginStatus(email) {
-  // Default response (allowed)
-  const defaultResponse = {
-    allowed: true,
-    attemptsRemaining: 5,
-    remainingMinutes: 0
-  };
-  
-  if (!db || !email) return Promise.resolve(defaultResponse);
-  
-  try {
-    // Normalize email
-    const normalizedEmail = email.toLowerCase().replace(/[.#$]/g, '_');
-    
-    // Get reference to failed logins document
-    const failedLoginRef = doc(db, "failedLogins", normalizedEmail);
-    const failedLoginSnap = await getDoc(failedLoginRef);
-    
-    if (!failedLoginSnap.exists()) {
-      return defaultResponse;
-    }
-    
-    const data = failedLoginSnap.data();
-    const attempts = data.attempts || [];
-    
-    // If less than 5 attempts, login is allowed
-    if (attempts.length < 5) {
       return {
-        allowed: true,
-        attemptsRemaining: 5 - attempts.length,
-        remainingMinutes: 0
+        id: analysisSnap.id,
+        ...data,
+        createdAt: createdAt
       };
+    } else {
+      return null;
     }
-    
-    // Get the timestamp of the 5th most recent attempt
-    const fifthMostRecentAttempt = attempts[attempts.length - 5];
-    
-    // If no timestamp available, allow login
-    if (!fifthMostRecentAttempt) {
-      return defaultResponse;
-    }
-    
-    // Convert to JavaScript Date
-    const fifthMostRecentTime = fifthMostRecentAttempt.toDate ? 
-      fifthMostRecentAttempt.toDate() : new Date(fifthMostRecentAttempt);
-    
-    // Calculate time difference in minutes
-    const now = new Date();
-    const diffMinutes = Math.floor((now - fifthMostRecentTime) / (1000 * 60));
-    
-    // If more than 15 minutes have passed since 5th attempt, allow login
-    if (diffMinutes > 15) {
-      return defaultResponse;
-    }
-    
-    // Login is not allowed, return remaining time
-    return {
-      allowed: false,
-      attemptsRemaining: 0,
-      remainingMinutes: 15 - diffMinutes
-    };
   } catch (error) {
-    console.error("Error checking login status: ", error);
-    // On error, allow login
-    return defaultResponse;
+    console.error("Error getting crop analysis:", error);
+    throw error;
   }
 }
 
 /**
- * Reset failed login attempts counter
- * @param {string} email - Email address to reset
- * @returns {Promise} - Promise that resolves when counter is reset
+ * Delete a crop analysis from history
+ * @param {string} analysisId - Analysis ID
+ * @returns {Promise<void>}
  */
-export async function resetFailedLoginAttempts(email) {
-  if (!db || !email) return Promise.resolve(false);
-  
+export async function deleteCropAnalysis(analysisId) {
   try {
-    // Normalize email
-    const normalizedEmail = email.toLowerCase().replace(/[.#$]/g, '_');
-    
-    // Get reference to failed logins document
-    const failedLoginRef = doc(db, "failedLogins", normalizedEmail);
-    
-    // Reset attempts
-    await updateDoc(failedLoginRef, {
-      attempts: [],
-      count: 0,
-      lastReset: serverTimestamp()
-    });
-    
-    console.log("Failed login attempts reset");
-    return true;
+    await deleteDoc(doc(db, "cropAnalysis", analysisId));
   } catch (error) {
-    console.error("Error resetting failed login attempts: ", error);
-    return Promise.reject(error);
+    console.error("Error deleting crop analysis:", error);
+    throw error;
   }
-}
+} 

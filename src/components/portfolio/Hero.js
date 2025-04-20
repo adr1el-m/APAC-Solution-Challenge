@@ -47,8 +47,8 @@ const Hero = () => {
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5, delay: 0.9 }}
           >
-            Our three powerful technologies work seamlessly to detect crop diseases, 
-            optimize irrigation, and provide intelligent crop recommendations
+            Our powerful technologies work seamlessly to detect crop diseases
+            and provide intelligent crop recommendations
           </motion.p>
           <motion.div 
             className="flex flex-wrap justify-center gap-4"

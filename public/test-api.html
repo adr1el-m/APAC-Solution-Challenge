@@ -39,11 +39,12 @@
   <button id="test1">Test v1beta endpoint + gemini-pro</button>
   <button id="test2">Test v1 endpoint + gemini-pro</button>
   <button id="test3">Test with simple payload</button>
+  <button id="testAuto">Test with auto endpoint detection</button>
   
   <div id="result">Results will appear here...</div>
   
   <script type="module">
-    import { GEMINI_API_KEY, GEMINI_MODEL } from './config.js';
+    import { GEMINI_API_KEY, GEMINI_MODEL, AI_CONFIG } from './config.js';
     
     const resultDiv = document.getElementById('result');
     
@@ -87,21 +88,117 @@
       }
     }
     
+    async function testAPIAuto(model, payload) {
+      resultDiv.innerHTML = "Testing API with auto endpoint detection...\n";
+      resultDiv.classList.remove('error');
+      
+      try {
+        // Determine API version based on model
+        const apiVersion = model.includes('1.5') ? 'v1' : 'v1beta';
+        const url = `https://generativelanguage.googleapis.com/${apiVersion}/models/${model}:generateContent?key=${GEMINI_API_KEY}`;
+        
+        resultDiv.innerHTML += `Detected API version: ${apiVersion}\n`;
+        resultDiv.innerHTML += `URL: ${url}\n\n`;
+        resultDiv.innerHTML += `Payload: ${JSON.stringify(payload, null, 2)}\n\n`;
+        
+        const start = performance.now();
+        const response = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const timeElapsed = Math.round(performance.now() - start);
+        
+        resultDiv.innerHTML += `Response status: ${response.status} (${timeElapsed}ms)\n\n`;
+        
+        if (!response.ok) {
+          resultDiv.innerHTML += `Primary endpoint failed. Attempting fallback...\n`;
+          
+          // Fallback to v1beta if v1 fails (for backward compatibility)
+          if (apiVersion === 'v1') {
+            const fallbackUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${GEMINI_API_KEY}`;
+            
+            resultDiv.innerHTML += `Fallback URL: ${fallbackUrl}\n\n`;
+            
+            const fallbackStart = performance.now();
+            const fallbackResponse = await fetch(fallbackUrl, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(payload)
+            });
+            const fallbackTimeElapsed = Math.round(performance.now() - fallbackStart);
+            
+            resultDiv.innerHTML += `Fallback response status: ${fallbackResponse.status} (${fallbackTimeElapsed}ms)\n\n`;
+            
+            if (!fallbackResponse.ok) {
+              throw new Error(`Fallback API error (${fallbackResponse.status}): ${await fallbackResponse.text()}`);
+            }
+            
+            const fallbackResponseText = await fallbackResponse.text();
+            try {
+              const data = JSON.parse(fallbackResponseText);
+              resultDiv.innerHTML += `Response: ${JSON.stringify(data, null, 2)}\n`;
+              
+              if (data.candidates && data.candidates[0] && data.candidates[0].content) {
+                resultDiv.innerHTML += `\nText response: ${data.candidates[0].content.parts[0].text}\n`;
+              }
+            } catch (e) {
+              resultDiv.innerHTML += `Response text (not JSON): ${fallbackResponseText}\n`;
+            }
+            
+            return;
+          }
+          
+          throw new Error(`API error (${response.status}): ${await response.text()}`);
+        }
+        
+        const responseText = await response.text();
+        
+        try {
+          const data = JSON.parse(responseText);
+          resultDiv.innerHTML += `Response: ${JSON.stringify(data, null, 2)}\n`;
+          
+          if (data.candidates && data.candidates[0] && data.candidates[0].content) {
+            resultDiv.innerHTML += `\nText response: ${data.candidates[0].content.parts[0].text}\n`;
+          }
+        } catch (e) {
+          resultDiv.innerHTML += `Response text (not JSON): ${responseText}\n`;
+        }
+        
+      } catch (error) {
+        resultDiv.classList.add('error');
+        resultDiv.innerHTML += `Error: ${error.message}\n`;
+        console.error('API test error:', error);
+      }
+    }
+    
     document.getElementById('test1').addEventListener('click', () => {
-      testAPI('v1beta', 'gemini-pro', {
+      testAPI('v1beta', GEMINI_MODEL, {
         contents: [{ parts: [{ text: "Hello from the test page!" }] }]
       });
     });
     
     document.getElementById('test2').addEventListener('click', () => {
-      testAPI('v1', 'gemini-pro', {
+      testAPI('v1', GEMINI_MODEL, {
         contents: [{ parts: [{ text: "Hello from the test page!" }] }]
       });
     });
     
     document.getElementById('test3').addEventListener('click', () => {
-      testAPI('v1beta', 'gemini-pro', {
+      testAPI('v1beta', GEMINI_MODEL, {
         prompt: { text: "Hello from the test page with simple payload!" }
+      });
+    });
+    
+    document.getElementById('testAuto').addEventListener('click', () => {
+      testAPIAuto(GEMINI_MODEL, {
+        contents: [{ parts: [{ text: "Hello from the test page with auto endpoint detection!" }] }],
+        generationConfig: {
+          temperature: AI_CONFIG.temperature,
+          maxOutputTokens: AI_CONFIG.maxOutputTokens,
+          topP: AI_CONFIG.topP,
+          topK: AI_CONFIG.topK
+        }
       });
     });
   </script>

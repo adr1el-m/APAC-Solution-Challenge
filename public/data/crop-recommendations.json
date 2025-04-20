@@ -1,167 +1,403 @@
-{
-  "crops": [
-    {
-      "id": "rice",
-      "name": "Rice",
+[
+  {
+    "id": "r001",
+    "region": "Philippines",
+    "climate": "Tropical monsoon",
+    "soilType": "Clay loam",
+    "waterAvailability": "High",
+    "recommendations": [
+      {
+        "cropName": "Rice",
       "varieties": [
         {
-          "name": "IR64",
-          "yieldPotential": "High",
-          "maturityDays": 115,
-          "diseaseResistance": "Medium",
-          "droughtTolerance": "Low",
-          "optimalConditions": {
-            "soilType": "Clay loam",
-            "temperature": "25-30°C",
-            "rainfall": "1500-2000mm"
+            "name": "NSIC Rc 222",
+            "type": "Inbred",
+            "maturityDays": 110,
+            "averageYield": "6.5-8.0 tons/ha",
+            "diseaseResistance": ["Bacterial leaf blight", "Blast"],
+            "specialTraits": ["High yielding", "Good eating quality"]
           },
-          "marketDemand": "High"
-        },
-        {
-          "name": "NERICA",
-          "yieldPotential": "Medium-High",
-          "maturityDays": 95,
-          "diseaseResistance": "High",
-          "droughtTolerance": "Medium",
-          "optimalConditions": {
-            "soilType": "Various",
-            "temperature": "24-30°C",
-            "rainfall": "1000-1500mm"
+          {
+            "name": "NSIC Rc 216",
+            "type": "Inbred",
+            "maturityDays": 108,
+            "averageYield": "6.0-7.5 tons/ha",
+            "diseaseResistance": ["Bacterial leaf blight", "Blast", "Tungro"],
+            "specialTraits": ["Good eating quality", "Intermediate amylose"]
           },
-          "marketDemand": "Medium-High"
-        }
-      ],
-      "fertilizationSchedule": [
-        {
-          "stage": "Basal",
-          "timing": "Before planting",
-          "npkRatio": "18-46-0",
-          "amountKgPerHa": 100
-        },
-        {
-          "stage": "Tillering",
-          "timing": "15-20 days after transplanting",
-          "npkRatio": "46-0-0",
-          "amountKgPerHa": 150
-        },
-        {
-          "stage": "Panicle initiation",
-          "timing": "40-45 days after transplanting",
-          "npkRatio": "46-0-0",
-          "amountKgPerHa": 100
-        }
-      ],
-      "rotationRecommendations": ["Legumes", "Vegetables", "Maize"],
-      "aiYieldPrediction": {
-        "basedOn": "5-year historical data",
-        "predictedIncrease": "25-30%"
+          {
+            "name": "Mestiso 20",
+            "type": "Hybrid",
+            "maturityDays": 115,
+            "averageYield": "7.0-9.0 tons/ha",
+            "diseaseResistance": ["Bacterial leaf blight"],
+            "specialTraits": ["Very high yielding", "Lodging resistant"]
+          }
+        ],
+        "plantingSeason": ["June-July", "December-January"],
+        "plantingMethod": "Transplanting",
+        "seedingRate": "40-60 kg/ha (inbred), 15-18 kg/ha (hybrid)",
+        "rowSpacing": "20 cm × 20 cm",
+        "fertilizerRecommendation": "120-60-60 kg NPK/ha",
+        "irrigationRequired": true,
+        "profitabilityRating": 4
+      },
+      {
+        "cropName": "Corn",
+        "varieties": [
+          {
+            "name": "NK 8840",
+            "type": "Hybrid",
+            "maturityDays": 105,
+            "averageYield": "8.5-10.0 tons/ha",
+            "diseaseResistance": ["Downy mildew", "Rust"],
+            "specialTraits": ["High yielding", "Drought tolerant"]
+          },
+          {
+            "name": "Pioneer P3774",
+            "type": "Hybrid",
+            "maturityDays": 110,
+            "averageYield": "9.0-11.0 tons/ha",
+            "diseaseResistance": ["Downy mildew", "Rust", "Blight"],
+            "specialTraits": ["Very high yielding", "Good standability"]
+          }
+        ],
+        "plantingSeason": ["May-June", "November-December"],
+        "plantingMethod": "Direct seeding",
+        "seedingRate": "18-20 kg/ha",
+        "rowSpacing": "75 cm × 25 cm",
+        "fertilizerRecommendation": "120-60-40 kg NPK/ha",
+        "irrigationRequired": true,
+        "profitabilityRating": 4
+      },
+      {
+        "cropName": "Mango",
+        "varieties": [
+          {
+            "name": "Carabao",
+            "type": "Local cultivar",
+            "maturityDays": "110-120 days after flower induction",
+            "averageYield": "10-15 tons/ha (mature trees)",
+            "diseaseResistance": ["Moderately resistant to anthracnose"],
+            "specialTraits": ["Export quality", "Sweet flavor", "Thin seed"]
+          }
+        ],
+        "plantingSeason": ["May-June"],
+        "plantingMethod": "Grafted seedlings",
+        "seedingRate": "100 trees/ha",
+        "rowSpacing": "10m × 10m",
+        "fertilizerRecommendation": "1kg complete fertilizer per tree per year of age",
+        "irrigationRequired": true,
+        "profitabilityRating": 5
       }
-    },
-    {
-      "id": "maize",
-      "name": "Maize/Corn",
+    ]
+  },
+  {
+    "id": "r002",
+    "region": "Thailand",
+    "climate": "Tropical savanna",
+    "soilType": "Sandy loam",
+    "waterAvailability": "Medium",
+    "recommendations": [
+      {
+        "cropName": "Cassava",
       "varieties": [
         {
-          "name": "Hybrid P3258",
-          "yieldPotential": "Very High",
-          "maturityDays": 130,
-          "diseaseResistance": "High",
-          "droughtTolerance": "Medium",
-          "optimalConditions": {
-            "soilType": "Well-drained loamy",
-            "temperature": "18-25°C",
-            "rainfall": "500-800mm"
+            "name": "Rayong 9",
+            "type": "High yield",
+            "maturityDays": 300,
+            "averageYield": "35-40 tons/ha",
+            "diseaseResistance": ["Moderately resistant to bacterial blight"],
+            "specialTraits": ["High starch content", "Drought tolerant"]
           },
-          "marketDemand": "High"
-        },
-        {
-          "name": "Open Pollinated ZM521",
-          "yieldPotential": "Medium",
-          "maturityDays": 110,
-          "diseaseResistance": "Medium",
-          "droughtTolerance": "High",
-          "optimalConditions": {
-            "soilType": "Sandy loam to clay loam",
-            "temperature": "18-30°C",
-            "rainfall": "400-600mm"
+          {
+            "name": "KU50",
+            "type": "Industrial",
+            "maturityDays": 270,
+            "averageYield": "30-35 tons/ha",
+            "diseaseResistance": ["Bacterial blight", "Mealybug resistant"],
+            "specialTraits": ["High starch content", "Widely adaptable"]
+          }
+        ],
+        "plantingSeason": ["April-May", "October-November"],
+        "plantingMethod": "Stem cuttings",
+        "seedingRate": "10,000 stems/ha",
+        "rowSpacing": "1m × 1m",
+        "fertilizerRecommendation": "100-50-100 kg NPK/ha",
+        "irrigationRequired": false,
+        "profitabilityRating": 3
+      },
+      {
+        "cropName": "Rice",
+        "varieties": [
+          {
+            "name": "KDML 105 (Jasmine)",
+            "type": "Aromatic",
+            "maturityDays": 140,
+            "averageYield": "3.0-4.0 tons/ha",
+            "diseaseResistance": ["Moderately resistant to blast"],
+            "specialTraits": ["Premium fragrant rice", "Export quality"]
           },
-          "marketDemand": "Medium"
-        }
-      ],
-      "fertilizationSchedule": [
-        {
-          "stage": "Basal",
-          "timing": "At planting",
-          "npkRatio": "15-15-15",
-          "amountKgPerHa": 200
-        },
-        {
-          "stage": "V6 (6 leaves)",
-          "timing": "25-30 days after emergence",
-          "npkRatio": "46-0-0",
-          "amountKgPerHa": 150
-        },
-        {
-          "stage": "V12 (12 leaves)",
-          "timing": "45-50 days after emergence",
-          "npkRatio": "46-0-0",
-          "amountKgPerHa": 100
-        }
-      ],
-      "rotationRecommendations": ["Legumes", "Sunflower", "Sweet Potato"],
-      "aiYieldPrediction": {
-        "basedOn": "3-year historical data + climate models",
-        "predictedIncrease": "30-35%"
+          {
+            "name": "RD33",
+            "type": "Non-photoperiod sensitive",
+            "maturityDays": 120,
+            "averageYield": "5.0-6.0 tons/ha",
+            "diseaseResistance": ["Blast", "Bacterial leaf blight"],
+            "specialTraits": ["Drought tolerant", "Multiple cropping"]
+          }
+        ],
+        "plantingSeason": ["May-June", "November-December"],
+        "plantingMethod": "Direct seeding",
+        "seedingRate": "80-125 kg/ha",
+        "rowSpacing": "Broadcast method",
+        "fertilizerRecommendation": "90-45-45 kg NPK/ha",
+        "irrigationRequired": true,
+        "profitabilityRating": 4
+      },
+      {
+        "cropName": "Sugarcane",
+        "varieties": [
+          {
+            "name": "KK3",
+            "type": "Commercial",
+            "maturityDays": 300,
+            "averageYield": "90-110 tons/ha",
+            "diseaseResistance": ["Red rot", "Smut resistance"],
+            "specialTraits": ["High sugar content", "Good ratooning ability"]
+          }
+        ],
+        "plantingSeason": ["November-December"],
+        "plantingMethod": "Sett planting",
+        "seedingRate": "10-12 tons/ha",
+        "rowSpacing": "1.5m × 0.5m",
+        "fertilizerRecommendation": "150-60-60 kg NPK/ha",
+        "irrigationRequired": true,
+        "profitabilityRating": 3
       }
-    }
-  ],
-  "soilRecommendations": [
-    {
-      "soilType": "Sandy",
-      "recommendedCrops": ["Cassava", "Sweet Potato", "Groundnut"],
-      "liming": "Medium requirement",
-      "organicMatter": "High requirement",
-      "irrigationNotes": "Frequent irrigation needed"
-    },
-    {
-      "soilType": "Loamy",
-      "recommendedCrops": ["Maize", "Vegetables", "Wheat", "Soybean"],
-      "liming": "Low to medium requirement",
-      "organicMatter": "Medium requirement",
-      "irrigationNotes": "Moderate irrigation schedule"
-    },
-    {
-      "soilType": "Clay",
-      "recommendedCrops": ["Rice", "Sugarcane", "Cotton"],
-      "liming": "Variable - soil test recommended",
-      "organicMatter": "Medium requirement",
-      "irrigationNotes": "Less frequent, deeper irrigation"
-    }
-  ],
-  "profitabilityIndex": [
-    {
-      "crop": "Rice",
-      "inputCosts": "High",
-      "marketPrice": "Medium-High",
-      "laborRequirement": "High",
-      "returnOnInvestment": "35-45%",
-      "marketTrend": "Stable-Increasing"
-    },
-    {
-      "crop": "Maize",
-      "inputCosts": "Medium",
-      "marketPrice": "Medium",
-      "laborRequirement": "Medium",
-      "returnOnInvestment": "40-50%",
-      "marketTrend": "Increasing"
-    },
-    {
-      "crop": "Vegetables",
-      "inputCosts": "High",
-      "marketPrice": "High",
-      "laborRequirement": "Very High",
-      "returnOnInvestment": "60-100%",
-      "marketTrend": "Volatile-High"
-    }
-  ]
-} 
+    ]
+  },
+  {
+    "id": "r003",
+    "region": "Vietnam",
+    "climate": "Tropical monsoon",
+    "soilType": "Alluvial",
+    "waterAvailability": "High",
+    "recommendations": [
+      {
+        "cropName": "Rice",
+        "varieties": [
+          {
+            "name": "OM5451",
+            "type": "Inbred",
+            "maturityDays": 95,
+            "averageYield": "7.0-8.0 tons/ha",
+            "diseaseResistance": ["Brown planthopper", "Blast"],
+            "specialTraits": ["Short duration", "Salinity tolerant"]
+          },
+          {
+            "name": "Jasmine 85",
+            "type": "Aromatic",
+            "maturityDays": 120,
+            "averageYield": "4.5-5.5 tons/ha",
+            "diseaseResistance": ["Moderately resistant to major diseases"],
+            "specialTraits": ["Aromatic", "Export quality"]
+          }
+        ],
+        "plantingSeason": ["Winter-Spring: Dec-Jan", "Summer-Autumn: Apr-May", "Autumn-Winter: Jul-Aug"],
+        "plantingMethod": "Direct seeding",
+        "seedingRate": "100-120 kg/ha",
+        "rowSpacing": "Broadcast method",
+        "fertilizerRecommendation": "100-60-60 kg NPK/ha",
+        "irrigationRequired": true,
+        "profitabilityRating": 4
+      },
+      {
+        "cropName": "Coffee",
+        "varieties": [
+          {
+            "name": "TR4",
+            "type": "Robusta",
+            "maturityDays": "Perennial (first harvest at 3 years)",
+            "averageYield": "2.5-3.0 tons/ha (green beans)",
+            "diseaseResistance": ["Leaf rust resistant"],
+            "specialTraits": ["High yield", "Drought tolerance"]
+          }
+        ],
+        "plantingSeason": ["May-August"],
+        "plantingMethod": "Seedlings",
+        "seedingRate": "1,100 trees/ha",
+        "rowSpacing": "3m × 3m",
+        "fertilizerRecommendation": "250-90-300 kg NPK/ha/year",
+        "irrigationRequired": true,
+        "profitabilityRating": 4
+      },
+      {
+        "cropName": "Black Pepper",
+        "varieties": [
+          {
+            "name": "Vinh Linh",
+            "type": "Local cultivar",
+            "maturityDays": "Perennial (first harvest at 3 years)",
+            "averageYield": "3.5-4.5 tons/ha (dry pepper)",
+            "diseaseResistance": ["Moderately resistant to foot rot"],
+            "specialTraits": ["High piperine content", "Strong aroma"]
+          }
+        ],
+        "plantingSeason": ["May-July"],
+        "plantingMethod": "Rooted cuttings",
+        "seedingRate": "1,600 vines/ha",
+        "rowSpacing": "2.5m × 2.5m",
+        "fertilizerRecommendation": "300-200-300 kg NPK/ha/year",
+        "irrigationRequired": true,
+        "profitabilityRating": 5
+      }
+    ]
+  },
+  {
+    "id": "r004",
+    "region": "Indonesia",
+    "climate": "Tropical rainforest",
+    "soilType": "Volcanic",
+    "waterAvailability": "High",
+    "recommendations": [
+      {
+        "cropName": "Oil Palm",
+        "varieties": [
+          {
+            "name": "DxP Yangambi",
+            "type": "Hybrid",
+            "maturityDays": "Perennial (first harvest at 3 years)",
+            "averageYield": "25-30 tons/ha (fresh fruit bunches)",
+            "diseaseResistance": ["Ganoderma tolerance"],
+            "specialTraits": ["High oil extraction rate", "Compact growth"]
+          }
+        ],
+        "plantingSeason": ["Beginning of rainy season"],
+        "plantingMethod": "Seedlings",
+        "seedingRate": "143 trees/ha",
+        "rowSpacing": "9m triangular pattern",
+        "fertilizerRecommendation": "90-60-180 kg NPK/ha/year",
+        "irrigationRequired": false,
+        "profitabilityRating": 5
+      },
+      {
+        "cropName": "Coconut",
+        "varieties": [
+          {
+            "name": "KHINA-1",
+            "type": "Hybrid",
+            "maturityDays": "Perennial (first harvest at 4-5 years)",
+            "averageYield": "100-120 nuts/tree/year",
+            "diseaseResistance": ["Drought tolerant"],
+            "specialTraits": ["Early bearing", "High copra content"]
+          }
+        ],
+        "plantingSeason": ["Rainy season start"],
+        "plantingMethod": "Seedlings",
+        "seedingRate": "175 trees/ha",
+        "rowSpacing": "8m × 8m",
+        "fertilizerRecommendation": "2kg complete fertilizer per tree per year",
+        "irrigationRequired": false,
+        "profitabilityRating": 3
+      },
+      {
+        "cropName": "Clove",
+        "varieties": [
+          {
+            "name": "Zanzibar",
+            "type": "Commercial",
+            "maturityDays": "Perennial (first harvest at 6-7 years)",
+            "averageYield": "1.0-1.5 tons/ha (dry cloves)",
+            "diseaseResistance": ["Moderately resistant to sudden death disease"],
+            "specialTraits": ["High eugenol content", "Aromatic"]
+          }
+        ],
+        "plantingSeason": ["Beginning of rainy season"],
+        "plantingMethod": "Seedlings",
+        "seedingRate": "400 trees/ha",
+        "rowSpacing": "5m × 5m",
+        "fertilizerRecommendation": "1kg NPK per tree per year of age",
+        "irrigationRequired": false,
+        "profitabilityRating": 4
+      }
+    ]
+  },
+  {
+    "id": "r005",
+    "region": "Malaysia",
+    "climate": "Tropical rainforest",
+    "soilType": "Peat and mineral",
+    "waterAvailability": "High",
+    "recommendations": [
+      {
+        "cropName": "Oil Palm",
+        "varieties": [
+          {
+            "name": "DxP AVROS",
+            "type": "Hybrid",
+            "maturityDays": "Perennial (first harvest at 3 years)",
+            "averageYield": "28-32 tons/ha (fresh fruit bunches)",
+            "diseaseResistance": ["Basal stem rot tolerance"],
+            "specialTraits": ["High oil yield", "Adaptable to peat soils"]
+          }
+        ],
+        "plantingSeason": ["Beginning of rainy season"],
+        "plantingMethod": "Seedlings",
+        "seedingRate": "143 trees/ha",
+        "rowSpacing": "9m triangular pattern",
+        "fertilizerRecommendation": "120-80-200 kg NPK/ha/year",
+        "irrigationRequired": false,
+        "profitabilityRating": 5
+      },
+      {
+        "cropName": "Durian",
+        "varieties": [
+          {
+            "name": "Musang King",
+            "type": "Premium",
+            "maturityDays": "Perennial (first harvest at 5-6 years)",
+            "averageYield": "10-15 tons/ha",
+            "diseaseResistance": ["Phytophthora resistance"],
+            "specialTraits": ["Premium flavor", "Export quality"]
+          }
+        ],
+        "plantingSeason": ["Beginning of rainy season"],
+        "plantingMethod": "Grafted seedlings",
+        "seedingRate": "100 trees/ha",
+        "rowSpacing": "10m × 10m",
+        "fertilizerRecommendation": "1-1.5kg NPK per tree per year of age",
+        "irrigationRequired": true,
+        "profitabilityRating": 5
+      },
+      {
+        "cropName": "Pineapple",
+        "varieties": [
+          {
+            "name": "MD2",
+            "type": "Commercial",
+            "maturityDays": 420,
+            "averageYield": "70-80 tons/ha",
+            "diseaseResistance": ["Phytophthora resistance"],
+            "specialTraits": ["Sweet flavor", "Export quality", "Long shelf life"]
+          },
+          {
+            "name": "Josapine",
+            "type": "Local hybrid",
+            "maturityDays": 400,
+            "averageYield": "50-60 tons/ha",
+            "diseaseResistance": ["Bacterial heart rot resistant"],
+            "specialTraits": ["Sweet flavor", "Spiny leaves"]
+          }
+        ],
+        "plantingSeason": ["Year-round with irrigation"],
+        "plantingMethod": "Suckers or crowns",
+        "seedingRate": "50,000-60,000 plants/ha",
+        "rowSpacing": "Double row system: 60cm × 30cm",
+        "fertilizerRecommendation": "300-150-450 kg NPK/ha",
+        "irrigationRequired": true,
+        "profitabilityRating": 4
+      }
+    ]
+  }
+] 
