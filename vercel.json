@@ -1,9 +1,36 @@
 {
   "version": 2,
-  "buildCommand": "npm install -D tailwindcss postcss autoprefixer && npm run build",
-  "outputDirectory": "build",
-  "rewrites": [
-    { "source": "/env.js", "destination": "/api/env.js" }
+  "builds": [
+    {
+      "src": "api/**/*.js",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "buildCommand": "npm install -D tailwindcss postcss autoprefixer && npm run build",
+        "outputDirectory": "build"
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/env.js",
+      "dest": "/api/env.js"
+    },
+    {
+      "src": "/api/(.*)",
+      "dest": "/api/$1"
+    },
+    {
+      "src": "/(.*)\\.(.+)",
+      "dest": "/$1.$2"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
+    }
   ],
   "github": {
     "silent": true

@@ -1,5 +1,6 @@
 // API endpoint that injects environment variables
-module.exports = (req, res) => {
+// This file uses CommonJS modules
+const handler = (req, res) => {
   // Set CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET');
@@ -25,4 +26,7 @@ module.exports = (req, res) => {
   
   // Send the JavaScript content
   res.status(200).end(jsContent);
-} 
+};
+
+// Export using CommonJS
+module.exports = handler; 
