@@ -13,6 +13,10 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth();
 const googleProvider = new GoogleAuthProvider();
 
+// Log Firebase config for debugging
+console.log("Firebase Auth Domain:", firebaseConfig.authDomain);
+console.log("Current URL:", window.location.hostname);
+
 document.addEventListener('DOMContentLoaded', function() {
   // Regular sign in form submission
   const loginForm = document.querySelector('form');
@@ -30,7 +34,7 @@ document.addEventListener('DOMContentLoaded', function() {
   checkAuthState();
 });
 
-// Handle form submission for email/password login
+// Form submission handler
 async function handleFormSubmit(e) {
   e.preventDefault();
   
@@ -38,19 +42,17 @@ async function handleFormSubmit(e) {
   const password = document.getElementById('password').value;
   const rememberMe = document.getElementById('remember').checked;
   
+  if (!email || !password) {
+    showError('Please enter both email and password');
+    return;
+  }
+  
   try {
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
     const user = userCredential.user;
     
-    // Store user data if remember me is checked
-    if (rememberMe) {
-      localStorage.setItem('rememberMe', 'true');
-    } else {
-      localStorage.removeItem('rememberMe');
-    }
-    
-    // Store basic user info
-    storeUserInfo(user);
+    // Store user info
+    storeUserInfo(user, rememberMe);
     
     // Redirect to dashboard
     window.location.href = 'dashboard.html';
@@ -62,6 +64,13 @@ async function handleFormSubmit(e) {
 // Handle Google Sign In
 async function handleGoogleSignIn() {
   try {
+    // Show loading state
+    const googleButton = document.getElementById('googleLogin');
+    if (googleButton) {
+      googleButton.disabled = true;
+      googleButton.innerHTML = '<img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="Google logo"> <i class="fas fa-spinner fa-spin"></i> Processing...';
+    }
+    
     const result = await signInWithPopup(auth, googleProvider);
     const user = result.user;
     
@@ -71,59 +80,67 @@ async function handleGoogleSignIn() {
     // Redirect to dashboard
     window.location.href = 'dashboard.html';
   } catch (error) {
-    showError('Google login failed: ' + error.message);
+    // Reset button state
+    const googleButton = document.getElementById('googleLogin');
+    if (googleButton) {
+      googleButton.disabled = false;
+      googleButton.innerHTML = '<img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="Google logo"> Sign in with Google';
+    }
+    
+    console.error("Google sign-in error details:", error);
+    
+    // Special handling for auth domain errors
+    if (error.code === 'auth/unauthorized-domain') {
+      showError(`This domain (${window.location.hostname}) is not authorized for Firebase authentication. Please add it to your Firebase console's authorized domains.`);
+    } else {
+      showError('Google login failed: ' + error.message);
+    }
   }
 }
 
 // Check if user is already authenticated
 function checkAuthState() {
   onAuthStateChanged(auth, (user) => {
-    if (user && localStorage.getItem('rememberMe') === 'true') {
-      // User is already signed in and remembering is enabled
-      storeUserInfo(user);
+    if (user) {
+      // User is signed in, redirect to dashboard
       window.location.href = 'dashboard.html';
     }
   });
 }
 
-// Store user info in localStorage
-function storeUserInfo(user) {
-  // Extract display name parts for first and last name
-  let firstName = '';
-  let lastName = '';
+// Store user info to localStorage
+function storeUserInfo(user, rememberMe = false) {
+  if (rememberMe) {
+    localStorage.setItem('rememberMe', 'true');
+  }
+  
+  // Store basic user data for use in other pages
+  localStorage.setItem('userId', user.uid);
+  localStorage.setItem('userEmail', user.email || '');
   
   if (user.displayName) {
     const nameParts = user.displayName.split(' ');
-    firstName = nameParts[0] || '';
-    lastName = nameParts.slice(1).join(' ') || '';
+    localStorage.setItem('userFirstName', nameParts[0] || '');
+    localStorage.setItem('userLastName', nameParts.slice(1).join(' ') || '');
   }
-  
-  localStorage.setItem('userEmail', user.email || '');
-  localStorage.setItem('userId', user.uid || '');
-  localStorage.setItem('userFirstName', firstName);
-  localStorage.setItem('userLastName', lastName);
 }
 
 // Show error message
 function showError(message) {
-  // Check if error element already exists
-  let errorElement = document.querySelector('.login-error');
-  
-  if (!errorElement) {
-    // Create error element if it doesn't exist
-    errorElement = document.createElement('div');
-    errorElement.className = 'login-error';
-    errorElement.style.color = '#ff3e3e';
-    errorElement.style.backgroundColor = 'rgba(255, 62, 62, 0.1)';
-    errorElement.style.padding = '10px';
-    errorElement.style.borderRadius = '8px';
-    errorElement.style.marginBottom = '20px';
-    errorElement.style.fontSize = '0.9rem';
-    
-    // Insert before the form
-    const form = document.querySelector('form');
-    form.parentNode.insertBefore(errorElement, form);
-  }
-  
+  console.error(message);
+  const errorElement = document.createElement('div');
+  errorElement.className = 'error-message';
   errorElement.textContent = message;
+  
+  // Add to page
+  const container = document.querySelector('.login-card');
+  if (container) {
+    // Remove any existing error message
+    const existingError = container.querySelector('.error-message');
+    if (existingError) {
+      existingError.remove();
+    }
+    
+    container.appendChild(errorElement);
+  }
 } 

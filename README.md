@@ -155,6 +155,34 @@ If you encounter issues:
 - Ensure your API keys have the necessary permissions
 - Test API endpoints directly to isolate issues
 
+### 6. Fixing Google Authentication on Vercel
+
+After deploying to Vercel, Google authentication might not work because Firebase needs to whitelist your Vercel domain. Follow these steps:
+
+1. **Get your Vercel domain**:
+
+   - After deployment, note your Vercel domain (e.g., `your-project.vercel.app`)
+
+2. **Add domain to Firebase**:
+
+   - Go to [Firebase Console](https://console.firebase.google.com/)
+   - Select your project
+   - Go to "Authentication" → "Settings" → "Authorized domains"
+   - Click "Add domain"
+   - Add your Vercel domain (e.g., `your-project.vercel.app`)
+   - Save changes
+
+3. **Verify configuration**:
+
+   - Check that your Firebase project has Google Authentication enabled
+   - Ensure that your Google Cloud project has proper API settings for sign-in
+
+4. **Test again**:
+   - Try signing in with Google on your Vercel deployment
+   - If issues persist, check browser console for specific error messages
+
+Note: If you're using a custom domain with Vercel, you'll need to add that domain to Firebase as well.
+
 ### Local Development
 
 For local development, create a `.env` file based on the `.env.example` provided. This will allow you to run the application locally without exposing your API keys in your code.

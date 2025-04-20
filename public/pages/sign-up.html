@@ -579,6 +579,10 @@
           googleBtn.disabled = true;
           googleBtn.innerHTML = '<img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="Google logo"> <i class="fas fa-spinner fa-spin"></i> Processing...';
           
+          // Log Firebase configuration
+          console.log("Firebase Auth Domain:", firebaseConfig.authDomain);
+          console.log("Current URL:", window.location.hostname);
+          
           // Handle Google sign-in
           signInWithPopup(auth, googleProvider)
             .then((result) => {
@@ -611,7 +615,12 @@
               console.error("Google sign-in error:", error.code, error.message);
               
               if (error.code !== 'auth/popup-closed-by-user') {
-                showMessage(`Authentication failed: ${error.message}`, true);
+                // Special handling for auth domain errors
+                if (error.code === 'auth/unauthorized-domain') {
+                  showMessage(`This domain (${window.location.hostname}) is not authorized for Firebase authentication. Add it to Firebase authorized domains.`, true);
+                } else {
+                  showMessage(`Authentication failed: ${error.message}`, true);
+                }
               } else {
                 console.log("User closed the sign-in popup");
               }
